@@ -2,6 +2,7 @@ import { Router } from 'express';
 import pool from '../db/mysql.js';
 import { comparePassword, generateToken } from '../utils/auth.js';
 import logger from '../utils/logger.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -41,6 +42,21 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     logger.error('Login error:', error.message);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    res.json({
+      user: {
+        id: req.user.id,
+        name: req.user.name,
+        email: req.user.email,
+      },
+    });
+  } catch (error) {
+    logger.error('Auth me error:', error.message);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
