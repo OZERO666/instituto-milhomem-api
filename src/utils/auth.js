@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import logger from './logger.js';
 
 const SALT_ROUNDS = 12;
-const JWT_EXPIRES_IN = '7d';
+const JWT_EXPIRES_IN = '8h'; // alinha com uso real de sessão
 
 export const hashPassword = async (password) => {
   return await bcrypt.hash(password, SALT_ROUNDS);

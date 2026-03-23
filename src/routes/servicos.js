@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     res.json(rows);
   } catch (error) {
     logger.error('Servicos GET error:', error.message);
-    res.status(500).json({ error: 'Erro interno do servidor', detail: error.message });
+    res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
 
@@ -21,15 +21,15 @@ router.post('/', authMiddleware, async (req, res) => {
     const { nome, descricao, beneficios, processo, imagem, ordem } = req.body;
     const now = new Date();
     const id = uuidv4();
-    
+
     await pool.execute(
       'INSERT INTO servicos (id, nome, descricao, beneficios, processo, imagem, ordem, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [id, nome || null, descricao || null, beneficios || null, processo || null, imagem || null, ordem || 0, now, now]
+      [id, nome || null, descricao || null, beneficios || null, processo || null, imagem || null, ordem ?? 0, now, now]
     );
     res.status(201).json({ id, message: 'Criado com sucesso' });
   } catch (error) {
     logger.error('Servicos POST error:', error.message);
-    res.status(500).json({ error: 'Erro interno do servidor', detail: error.message, code: error.code });
+    res.status(500).json({ error: 'Erro interno do servidor', code: error.code });
   }
 });
 
@@ -37,35 +37,35 @@ router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const { nome, descricao, beneficios, processo, imagem, ordem } = req.body;
     const now = new Date();
-    
+
     const [result] = await pool.execute(
       'UPDATE servicos SET nome=?, descricao=?, beneficios=?, processo=?, imagem=?, ordem=?, updated=? WHERE id=?',
-      [nome || null, descricao || null, beneficios || null, processo || null, imagem || null, ordem || 0, now, req.params.id]
+      [nome || null, descricao || null, beneficios || null, processo || null, imagem || null, ordem ?? 0, now, req.params.id]
     );
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Serviço não encontrado' });
     }
-    
+
     res.json({ message: 'Atualizado com sucesso' });
   } catch (error) {
     logger.error('Servicos PUT error:', error.message);
-    res.status(500).json({ error: 'Erro interno do servidor', detail: error.message, code: error.code });
+    res.status(500).json({ error: 'Erro interno do servidor', code: error.code });
   }
 });
 
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const [result] = await pool.execute('DELETE FROM servicos WHERE id=?', [req.params.id]);
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Serviço não encontrado' });
     }
-    
+
     res.json({ message: 'Deletado com sucesso' });
   } catch (error) {
     logger.error('Servicos DELETE error:', error.message);
-    res.status(500).json({ error: 'Erro interno do servidor', detail: error.message, code: error.code });
+    res.status(500).json({ error: 'Erro interno do servidor', code: error.code });
   }
 });
 
