@@ -42,7 +42,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.options('*', cors()); // ✅ preflight CORS
+app.options(/.*/, cors()); // ✅ preflight CORS
 
 app.use(morgan('combined'));
 app.use(express.json());
@@ -60,7 +60,7 @@ app.use((req, res) => {
 const port = process.env.PORT || 3001;
 
 app.listen(port, () => {
-  logger.info(`🚀 API Server running on http://localhost:${port}`);
+  logger.info(`🚀 API Server running on http://127.0.0.1:${port}`);
 });
 
 export default app;
