@@ -1,3 +1,4 @@
+// src/main.js
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -6,6 +7,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
+import heroConfigRoutes from './routes/heroConfig.js';
 import routes from './routes/index.js';
 import uploadRoutes from './routes/uploads.js';
 import { errorMiddleware } from './middleware/index.js';
@@ -48,11 +50,17 @@ app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Rotas principais
 app.use('/', routes());
 app.use('/', uploadRoutes); // ✅ nome correto
 
+// Nova rota HeroConfig
+app.use('/hero-config', heroConfigRoutes);
+
+// Middleware de erro
 app.use(errorMiddleware);
 
+// 404
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
