@@ -38,7 +38,9 @@ process.on('SIGTERM', async () => {
 app.use(helmet());
 
 const allowedOrigins = [
-  process.env.CORS_ORIGIN,   // https://institutomilhomem.com
+  process.env.CORS_ORIGIN,
+  'https://www.institutomilhomem.com',
+  'https://institutomilhomem.com',
 ].filter(Boolean);
 
 app.use(cors({
