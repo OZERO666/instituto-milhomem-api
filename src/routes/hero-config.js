@@ -23,12 +23,22 @@ router.get('/', async (req, res) => {
 // POST /hero-config
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { badge, titulo, subtitulo, cta_texto, cta_link } = req.body;
+    const { badge, titulo, subtitulo, cta_texto, cta_link, imagem_fundo } = req.body;
+    const now = new Date();
 
     const [result] = await pool.query(
-      `INSERT INTO hero_config (badge, titulo, subtitulo, cta_texto, cta_link)
-       VALUES (?, ?, ?, ?, ?)`,
-      [badge || null, titulo || null, subtitulo || null, cta_texto || null, cta_link || null]
+      `INSERT INTO hero_config (badge, titulo, subtitulo, cta_texto, cta_link, imagem_fundo, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        badge || null,
+        titulo || null,
+        subtitulo || null,
+        cta_texto || null,
+        cta_link || null,
+        imagem_fundo || null,
+        now,
+        now,
+      ]
     );
 
     const [rows] = await pool.query('SELECT * FROM hero_config WHERE id = ?', [result.insertId]);
@@ -43,13 +53,22 @@ router.post('/', authMiddleware, async (req, res) => {
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const { badge, titulo, subtitulo, cta_texto, cta_link } = req.body;
+    const { badge, titulo, subtitulo, cta_texto, cta_link, imagem_fundo } = req.body;
 
     const [result] = await pool.query(
       `UPDATE hero_config
-         SET badge = ?, titulo = ?, subtitulo = ?, cta_texto = ?, cta_link = ?
+         SET badge = ?, titulo = ?, subtitulo = ?, cta_texto = ?, cta_link = ?, imagem_fundo = ?, updated_at = ?
        WHERE id = ?`,
-      [badge || null, titulo || null, subtitulo || null, cta_texto || null, cta_link || null, id]
+      [
+        badge || null,
+        titulo || null,
+        subtitulo || null,
+        cta_texto || null,
+        cta_link || null,
+        imagem_fundo || null,
+        new Date(),
+        id,
+      ]
     );
 
     if (!result.affectedRows) {

@@ -19,17 +19,44 @@ router.get('/', async (req, res) => {
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const {
-      email, telefone, whatsapp, mensagem_whatsapp,
-      endereco, dias_funcionamento, horario,
-      latitude, longitude, zoom
+      email,
+      telefone,
+      whatsapp,
+      instagram,
+      facebook,
+      mensagem_header,
+      mensagem_whatsapp,
+      endereco,
+      dias_funcionamento,
+      horario,
+      latitude,
+      longitude,
+      zoom,
     } = req.body;
 
     const id = uuidv4(); // ← gerado pelo servidor
     const now = new Date();
 
     await pool.execute(
-      'INSERT INTO contato_config (id, email, telefone, whatsapp, mensagem_whatsapp, endereco, dias_funcionamento, horario, latitude, longitude, zoom, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [id, email || null, telefone || null, whatsapp || null, mensagem_whatsapp || null, endereco || null, dias_funcionamento || null, horario || null, latitude || null, longitude || null, zoom ?? 17, now, now]
+      'INSERT INTO contato_config (id, email, telefone, whatsapp, instagram, facebook, mensagem_header, mensagem_whatsapp, endereco, dias_funcionamento, horario, latitude, longitude, zoom, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [
+        id,
+        email || null,
+        telefone || null,
+        whatsapp || null,
+        instagram || null,
+        facebook || null,
+        mensagem_header || null,
+        mensagem_whatsapp || null,
+        endereco || null,
+        dias_funcionamento || null,
+        horario || null,
+        latitude || null,
+        longitude || null,
+        zoom ?? 17,
+        now,
+        now,
+      ]
     );
     res.status(201).json({ id, message: 'Criado com sucesso' });
   } catch (error) {
@@ -41,14 +68,40 @@ router.post('/', authMiddleware, async (req, res) => {
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const {
-      email, telefone, whatsapp, mensagem_whatsapp,
-      endereco, dias_funcionamento, horario,
-      latitude, longitude, zoom
+      email,
+      telefone,
+      whatsapp,
+      instagram,
+      facebook,
+      mensagem_header,
+      mensagem_whatsapp,
+      endereco,
+      dias_funcionamento,
+      horario,
+      latitude,
+      longitude,
+      zoom,
     } = req.body;
 
     const [result] = await pool.execute(
-      'UPDATE contato_config SET email=?, telefone=?, whatsapp=?, mensagem_whatsapp=?, endereco=?, dias_funcionamento=?, horario=?, latitude=?, longitude=?, zoom=?, updated=? WHERE id=?',
-      [email || null, telefone || null, whatsapp || null, mensagem_whatsapp || null, endereco || null, dias_funcionamento || null, horario || null, latitude || null, longitude || null, zoom ?? 17, new Date(), req.params.id]
+      'UPDATE contato_config SET email=?, telefone=?, whatsapp=?, instagram=?, facebook=?, mensagem_header=?, mensagem_whatsapp=?, endereco=?, dias_funcionamento=?, horario=?, latitude=?, longitude=?, zoom=?, updated=? WHERE id=?',
+      [
+        email || null,
+        telefone || null,
+        whatsapp || null,
+        instagram || null,
+        facebook || null,
+        mensagem_header || null,
+        mensagem_whatsapp || null,
+        endereco || null,
+        dias_funcionamento || null,
+        horario || null,
+        latitude || null,
+        longitude || null,
+        zoom ?? 17,
+        new Date(),
+        req.params.id,
+      ]
     );
 
     if (result.affectedRows === 0) {
