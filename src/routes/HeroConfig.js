@@ -1,6 +1,9 @@
-// routes/heroConfig.js
-import express from 'express';
-import pool from '../db/mysql.js'; // caminho ajusta conforme sua estrutura
+// src/routes/galeria.js
+import { Router } from 'express';
+import { v4 as uuidv4 } from 'uuid';
+import pool from '../db/mysql.js';
+import { authMiddleware } from '../middleware/auth.js';
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 
