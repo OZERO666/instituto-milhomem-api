@@ -37,14 +37,27 @@ process.on('SIGTERM', async () => {
 
 app.use(helmet());
 
+const allowedOrigins = [
+  process.env.CORS_ORIGIN,   // https://institutomilhomem.com
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN,
+  origin: (origin, callback) => {
+    // Permite requisições sem Origin (ex: curl, health-check)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`Origin não permitido pelo CORS: ${origin}`), false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.options(/.*/, cors()); // ✅ preflight CORS
+app.options(/.*/, cors());
 
 app.use(morgan('combined'));
 app.use(express.json());
