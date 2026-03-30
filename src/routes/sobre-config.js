@@ -6,6 +6,17 @@ import logger from '../utils/logger.js';
 
 const router = Router();
 
+const FIELDS = [
+  'hero_title', 'hero_subtitle', 'hero_image', 'hero_badge',
+  'doctor_name', 'doctor_title', 'doctor_image', 'doctor_bio', 'doctor_experience_number', 'doctor_experience_label',
+  'about_title', 'about_text', 'about_detail_text', 'about_image',
+  'wfi_badge', 'wfi_title', 'wfi_text', 'wfi_link',
+  'values_title', 'values_subtitle',
+  'team_title', 'team_subtitle',
+  'technology_title', 'technology_text', 'technology_image',
+];
+const JSON_FIELDS = ['`values`', '`team`', 'doctor_credentials'];
+
 const ensureTable = async () => {
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS sobre_config (
@@ -13,10 +24,27 @@ const ensureTable = async () => {
       hero_title TEXT,
       hero_subtitle TEXT,
       hero_image TEXT,
+      hero_badge TEXT,
+      doctor_name TEXT,
+      doctor_title TEXT,
+      doctor_image TEXT,
+      doctor_bio TEXT,
+      doctor_credentials JSON,
+      doctor_experience_number TEXT,
+      doctor_experience_label TEXT,
       about_title TEXT,
       about_text TEXT,
+      about_detail_text TEXT,
       about_image TEXT,
+      wfi_badge TEXT,
+      wfi_title TEXT,
+      wfi_text TEXT,
+      wfi_link TEXT,
+      values_title TEXT,
+      values_subtitle TEXT,
       \`values\` JSON,
+      team_title TEXT,
+      team_subtitle TEXT,
       \`team\` JSON,
       technology_title TEXT,
       technology_text TEXT,
@@ -25,6 +53,32 @@ const ensureTable = async () => {
       updated DATETIME
     )
   `);
+
+  // Add new columns to existing tables (safe — ignores if already exists)
+  const newCols = [
+    ['hero_badge', 'TEXT'], ['doctor_name', 'TEXT'], ['doctor_title', 'TEXT'],
+    ['doctor_image', 'TEXT'], ['doctor_bio', 'TEXT'], ['doctor_credentials', 'JSON'],
+    ['doctor_experience_number', 'TEXT'], ['doctor_experience_label', 'TEXT'],
+    ['about_detail_text', 'TEXT'], ['wfi_badge', 'TEXT'], ['wfi_title', 'TEXT'],
+    ['wfi_text', 'TEXT'], ['wfi_link', 'TEXT'], ['values_title', 'TEXT'],
+    ['values_subtitle', 'TEXT'], ['team_title', 'TEXT'], ['team_subtitle', 'TEXT'],
+  ];
+  for (const [col, type] of newCols) {
+    try {
+      await pool.execute(`ALTER TABLE sobre_config ADD COLUMN \`${col}\` ${type}`);
+    } catch {
+      // column already exists – ignore
+    }
+  }
+};
+
+const pick = (body) => {
+  const data = {};
+  for (const f of FIELDS) data[f] = body[f] || null;
+  data.values = JSON.stringify(body.values || []);
+  data.team = JSON.stringify(body.team || []);
+  data.doctor_credentials = JSON.stringify(body.doctor_credentials || []);
+  return data;
 };
 
 router.get('/', async (req, res) => {
@@ -49,44 +103,19 @@ router.post('/', authMiddleware, async (req, res) => {
 
     const id = uuidv4();
     const now = new Date();
-    const {
-      hero_title,
-      hero_subtitle,
-      hero_image,
-      about_title,
-      about_text,
-      about_image,
-      values,
-      team,
-      technology_title,
-      technology_text,
-      technology_image,
-    } = req.body;
+    const data = pick(req.body);
+
+    const cols = [...FIELDS, ...JSON_FIELDS, 'id', 'created', 'updated'];
+    const placeholders = cols.map(() => '?').join(', ');
+    const vals = [
+      ...FIELDS.map(f => data[f]),
+      data.values, data.team, data.doctor_credentials,
+      id, now, now,
+    ];
 
     await pool.execute(
-      `INSERT INTO sobre_config (
-        id, hero_title, hero_subtitle, hero_image,
-        about_title, about_text, about_image,
-        \`values\`, \`team\`,
-        technology_title, technology_text, technology_image,
-        created, updated
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        id,
-        hero_title || null,
-        hero_subtitle || null,
-        hero_image || null,
-        about_title || null,
-        about_text || null,
-        about_image || null,
-        JSON.stringify(values || []),
-        JSON.stringify(team || []),
-        technology_title || null,
-        technology_text || null,
-        technology_image || null,
-        now,
-        now,
-      ]
+      `INSERT INTO sobre_config (${cols.join(', ')}) VALUES (${placeholders})`,
+      vals,
     );
 
     const [rows] = await pool.execute('SELECT * FROM sobre_config WHERE id = ?', [id]);
@@ -100,51 +129,23 @@ router.post('/', authMiddleware, async (req, res) => {
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
     await ensureTable();
+    const data = pick(req.body);
 
-    const {
-      hero_title,
-      hero_subtitle,
-      hero_image,
-      about_title,
-      about_text,
-      about_image,
-      values,
-      team,
-      technology_title,
-      technology_text,
-      technology_image,
-    } = req.body;
+    const setClauses = [
+      ...FIELDS.map(f => `\`${f}\` = ?`),
+      ...JSON_FIELDS.map(f => `${f} = ?`),
+      'updated = ?',
+    ];
+    const vals = [
+      ...FIELDS.map(f => data[f]),
+      data.values, data.team, data.doctor_credentials,
+      new Date(),
+      req.params.id,
+    ];
 
     const [result] = await pool.execute(
-      `UPDATE sobre_config SET
-        hero_title = ?,
-        hero_subtitle = ?,
-        hero_image = ?,
-        about_title = ?,
-        about_text = ?,
-        about_image = ?,
-        \`values\` = ?,
-        \`team\` = ?,
-        technology_title = ?,
-        technology_text = ?,
-        technology_image = ?,
-        updated = ?
-      WHERE id = ?`,
-      [
-        hero_title || null,
-        hero_subtitle || null,
-        hero_image || null,
-        about_title || null,
-        about_text || null,
-        about_image || null,
-        JSON.stringify(values || []),
-        JSON.stringify(team || []),
-        technology_title || null,
-        technology_text || null,
-        technology_image || null,
-        new Date(),
-        req.params.id,
-      ]
+      `UPDATE sobre_config SET ${setClauses.join(', ')} WHERE id = ?`,
+      vals,
     );
 
     if (result.affectedRows === 0) {

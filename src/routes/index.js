@@ -12,6 +12,7 @@ import estatisticasRoutes from './estatisticas.js';
 import contatoConfigRoutes from './contato-config.js';
 import heroPresetsRoutes from './hero-presets.js';
 import sobreConfigRoutes from './sobre-config.js';
+import pagesConfigRoutes from './pages-config.js';
 import auditLogsRoutes from './audit-logs.js';
 import seoRoutes from './seo.js';
 
@@ -32,6 +33,7 @@ export default () => {
   router.use('/contato-config', contatoConfigRoutes);
   router.use('/hero-presets', heroPresetsRoutes);
   router.use('/sobre-config', sobreConfigRoutes);
+  router.use('/pages-config', pagesConfigRoutes);
   router.use('/audit-logs', auditLogsRoutes);
   router.use('/seo-settings', seoRoutes);
 
