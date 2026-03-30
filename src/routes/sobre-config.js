@@ -17,6 +17,29 @@ const FIELDS = [
 ];
 const JSON_FIELDS = ['`values`', '`team`', 'doctor_credentials'];
 
+const parseJsonArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+const normalizeRow = (row) => {
+  if (!row) return {};
+  return {
+    ...row,
+    values: parseJsonArray(row.values),
+    team: parseJsonArray(row.team),
+    doctor_credentials: parseJsonArray(row.doctor_credentials),
+  };
+};
+
 const ensureTable = async () => {
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS sobre_config (
@@ -85,7 +108,7 @@ router.get('/', async (req, res) => {
   try {
     await ensureTable();
     const [rows] = await pool.execute('SELECT * FROM sobre_config LIMIT 1');
-    return res.json(rows[0] || {});
+    return res.json(normalizeRow(rows[0]));
   } catch (error) {
     logger.error('SobreConfig GET error:', error.message);
     return res.status(500).json({ error: 'Erro interno do servidor' });
@@ -119,7 +142,7 @@ router.post('/', authMiddleware, async (req, res) => {
     );
 
     const [rows] = await pool.execute('SELECT * FROM sobre_config WHERE id = ?', [id]);
-    return res.status(201).json(rows[0]);
+    return res.status(201).json(normalizeRow(rows[0]));
   } catch (error) {
     logger.error('SobreConfig POST error:', error.message);
     return res.status(500).json({ error: 'Erro interno do servidor' });
@@ -153,7 +176,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
     }
 
     const [rows] = await pool.execute('SELECT * FROM sobre_config WHERE id = ?', [req.params.id]);
-    return res.json(rows[0]);
+    return res.json(normalizeRow(rows[0]));
   } catch (error) {
     logger.error('SobreConfig PUT error:', error.message);
     return res.status(500).json({ error: 'Erro interno do servidor' });
