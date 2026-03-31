@@ -2,6 +2,7 @@
 import express from 'express';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -12,7 +13,7 @@ cloudinary.config({
   api_secret: 'onLF5G711jxWihYOH9_vFEfg1FM',
 });
 
-router.post('/upload/:folder', upload.single('file'), async (req, res) => {
+router.post('/upload/:folder', authMiddleware, upload.single('file'), async (req, res) => {
   try {
     const { folder } = req.params;
 
