@@ -51,6 +51,12 @@ router.post('/', authMiddleware, async (req, res) => {
       conteudo,
     } = req.body;
 
+    if (slug) {
+      const [existing] = await pool.execute('SELECT id FROM servicos WHERE slug = ? LIMIT 1', [slug]);
+      if (existing.length > 0) {
+        return res.status(409).json({ error: `O slug "${slug}" já está em uso por outro serviço.` });
+      }
+    }
     const now = new Date();
     const id  = uuidv4();
 
@@ -91,6 +97,13 @@ router.put('/:id', authMiddleware, async (req, res) => {
       ordem,
       conteudo,
     } = req.body;
+
+    if (slug) {
+      const [existing] = await pool.execute('SELECT id FROM servicos WHERE slug = ? AND id != ? LIMIT 1', [slug, req.params.id]);
+      if (existing.length > 0) {
+        return res.status(409).json({ error: `O slug "${slug}" já está em uso por outro serviço.` });
+      }
+    }
 
     const now = new Date();
 
@@ -134,6 +147,26 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   } catch (error) {
     logger.error('Servicos DELETE error:', error.message);
     res.status(500).json({ error: 'Erro interno do servidor', code: error.code });
+  }
+});
+
+// Reordena serviços em lote
+router.patch('/reorder', authMiddleware, async (req, res) => {
+  try {
+    const items = req.body;
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Array de itens esperado' });
+    }
+    const now = new Date();
+    await Promise.all(
+      items.map(({ id, ordem }) =>
+        pool.execute('UPDATE servicos SET ordem=?, updated=? WHERE id=?', [ordem ?? 0, now, id])
+      )
+    );
+    res.json({ message: 'Ordem atualizada' });
+  } catch (error) {
+    logger.error('Servicos PATCH reorder error:', error.message);
+    res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
 
