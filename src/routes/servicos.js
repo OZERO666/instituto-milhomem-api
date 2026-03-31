@@ -47,6 +47,7 @@ router.post('/', authMiddleware, async (req, res) => {
       beneficios,
       processo,
       imagem,
+      icon,
       ordem,
       conteudo,
     } = req.body;
@@ -61,7 +62,7 @@ router.post('/', authMiddleware, async (req, res) => {
     const id  = uuidv4();
 
     await pool.execute(
-      'INSERT INTO servicos (id, nome, slug, descricao, beneficios, processo, imagem, ordem, conteudo, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO servicos (id, nome, slug, descricao, beneficios, processo, imagem, icon, ordem, conteudo, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [
         id,
         nome || null,
@@ -70,6 +71,7 @@ router.post('/', authMiddleware, async (req, res) => {
         beneficios || null,
         processo || null,
         imagem || null,
+        icon || null,
         ordem ?? 0,
         conteudo || null,
         now,
@@ -94,6 +96,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
       beneficios,
       processo,
       imagem,
+      icon,
       ordem,
       conteudo,
     } = req.body;
@@ -108,7 +111,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
     const now = new Date();
 
     const [result] = await pool.execute(
-      'UPDATE servicos SET nome=?, slug=?, descricao=?, beneficios=?, processo=?, imagem=?, ordem=?, conteudo=?, updated=? WHERE id=?',
+      'UPDATE servicos SET nome=?, slug=?, descricao=?, beneficios=?, processo=?, imagem=?, icon=?, ordem=?, conteudo=?, updated=? WHERE id=?',
       [
         nome || null,
         slug || null,
@@ -116,6 +119,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
         beneficios || null,
         processo || null,
         imagem || null,
+        icon || null,
         ordem ?? 0,
         conteudo || null,
         now,

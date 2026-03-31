@@ -18,18 +18,18 @@ router.get('/', async (req, res) => {
 
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { nome, servico, texto, foto, data } = req.body;
+    const { nome, cargo, mensagem, foto } = req.body;
 
-    if (!nome || !texto) {
-      return res.status(400).json({ error: 'nome e texto são obrigatórios' });
+    if (!nome || !mensagem) {
+      return res.status(400).json({ error: 'nome e mensagem são obrigatórios' });
     }
 
-    const id = uuidv4(); // ← gerado pelo servidor, não pelo cliente
+    const id = uuidv4();
     const now = new Date();
 
     await pool.execute(
-      'INSERT INTO depoimentos (id, nome, servico, texto, foto, data, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [id, nome, servico || null, texto, foto || null, data || now, now, now]
+      'INSERT INTO depoimentos (id, nome, cargo, mensagem, foto, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [id, nome, cargo || null, mensagem, foto || null, now, now]
     );
     res.status(201).json({ id, message: 'Criado com sucesso' });
   } catch (error) {
@@ -40,15 +40,15 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const { nome, servico, texto, foto, data } = req.body;
+    const { nome, cargo, mensagem, foto } = req.body;
 
-    if (!nome || !texto) {
-      return res.status(400).json({ error: 'nome e texto são obrigatórios' });
+    if (!nome || !mensagem) {
+      return res.status(400).json({ error: 'nome e mensagem são obrigatórios' });
     }
 
     const [result] = await pool.execute(
-      'UPDATE depoimentos SET nome=?, servico=?, texto=?, foto=?, data=?, updated=? WHERE id=?',
-      [nome, servico || null, texto, foto || null, data || null, new Date(), req.params.id]
+      'UPDATE depoimentos SET nome=?, cargo=?, mensagem=?, foto=?, updated=? WHERE id=?',
+      [nome, cargo || null, mensagem, foto || null, new Date(), req.params.id]
     );
 
     if (result.affectedRows === 0) {
