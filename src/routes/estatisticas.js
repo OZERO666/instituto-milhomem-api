@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import pool from '../db/mysql.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { checkPermission } from '../middleware/checkPermission.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
@@ -16,7 +17,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, checkPermission('dashboard', 'create'), async (req, res) => {
   try {
     const { experiencia, pacientes, procedimentos, satisfacao } = req.body;
 
@@ -43,7 +44,7 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, checkPermission('dashboard', 'update'), async (req, res) => {
   try {
     const { experiencia, pacientes, procedimentos, satisfacao } = req.body;
 

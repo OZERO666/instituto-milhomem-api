@@ -31,7 +31,11 @@ router.post('/login', loginLimiter, async (req, res) => {
     }
 
     const [users] = await pool.execute(
-      'SELECT id, name, email, password FROM users WHERE email = ?',
+      `SELECT u.id, u.name, u.email, u.password, u.role_id,
+              r.name AS role_name, r.description AS role_description
+       FROM users u
+       LEFT JOIN roles r ON r.id = u.role_id
+       WHERE u.email = ?`,
       [email]
     );
 
@@ -48,7 +52,23 @@ router.post('/login', loginLimiter, async (req, res) => {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    const token = generateToken(user.id);
+    const [permissionsRows] = await pool.execute(
+      `SELECT p.resource, p.action
+       FROM role_permissions rp
+       INNER JOIN permissions p ON p.id = rp.permission_id
+       WHERE rp.role_id = ?
+       ORDER BY p.resource ASC, p.action ASC`,
+      [user.role_id]
+    );
+
+    const permissions = permissionsRows.map((row) => `${row.resource}:${row.action}`);
+
+    const token = generateToken({
+      id: user.id,
+      role_id: user.role_id,
+      role_name: user.role_name,
+      permissions,
+    });
 
     logger.info(`Login bem-sucedido: user ${user.id} (${user.email})`);
 
@@ -58,6 +78,10 @@ router.post('/login', loginLimiter, async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role_id: user.role_id,
+        role_name: user.role_name,
+        role_description: user.role_description,
+        permissions,
       },
     });
   } catch (error) {
@@ -73,6 +97,10 @@ router.get('/me', authMiddleware, async (req, res) => {
         id: req.user.id,
         name: req.user.name,
         email: req.user.email,
+        role_id: req.user.role_id,
+        role_name: req.user.role_name,
+        role_description: req.user.role_description,
+        permissions: req.user.permissions || [],
       },
     });
   } catch (error) {

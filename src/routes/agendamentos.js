@@ -2,11 +2,12 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import pool from '../db/mysql.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { checkPermission } from '../middleware/checkPermission.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
 
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, checkPermission('leads', 'read'), async (req, res) => {
   try {
     const [rows] = await pool.execute('SELECT * FROM agendamentos ORDER BY created DESC');
     res.json(rows);
@@ -47,7 +48,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, checkPermission('leads', 'update'), async (req, res) => {
   try {
     const { lido } = req.body;
 
@@ -67,7 +68,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, checkPermission('leads', 'delete'), async (req, res) => {
   try {
     const [result] = await pool.execute('DELETE FROM agendamentos WHERE id=?', [req.params.id]);
 

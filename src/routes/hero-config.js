@@ -2,6 +2,7 @@
 import { Router } from 'express';
 import pool from '../db/mysql.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { checkPermission } from '../middleware/checkPermission.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
@@ -21,7 +22,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /hero-config
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, checkPermission('dashboard', 'create'), async (req, res) => {
   try {
     const { badge, titulo, subtitulo, cta_texto, cta_link, imagem_fundo } = req.body;
     const now = new Date();
@@ -50,7 +51,7 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 // PUT /hero-config/:id
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, checkPermission('dashboard', 'update'), async (req, res) => {
   try {
     const { id } = req.params;
     const { badge, titulo, subtitulo, cta_texto, cta_link, imagem_fundo } = req.body;

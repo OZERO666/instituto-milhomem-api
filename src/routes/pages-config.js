@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import pool from '../db/mysql.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { checkPermission } from '../middleware/checkPermission.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
@@ -62,7 +63,7 @@ router.get('/:pageKey', async (req, res) => {
   }
 });
 
-router.put('/:pageKey', authMiddleware, async (req, res) => {
+router.put('/:pageKey', authMiddleware, checkPermission('dashboard', 'update'), async (req, res) => {
   try {
     await ensureTable();
 

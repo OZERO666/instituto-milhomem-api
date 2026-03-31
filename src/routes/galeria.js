@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import pool from '../db/mysql.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { checkPermission } from '../middleware/checkPermission.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
@@ -57,7 +58,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /galeria
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, checkPermission('gallery', 'create'), async (req, res) => {
   try {
     const { titulo, tema_id, meses_pos_operatorio, foto_antes, foto_depois } = req.body;
 
@@ -87,7 +88,7 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 // PUT /galeria/:id
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, checkPermission('gallery', 'update'), async (req, res) => {
   try {
     const { titulo, tema_id, meses_pos_operatorio, foto_antes, foto_depois } = req.body;
 
@@ -125,7 +126,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
 });
 
 // DELETE /galeria/:id
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, checkPermission('gallery', 'delete'), async (req, res) => {
   try {
     const [result] = await pool.execute(
       'DELETE FROM galeria WHERE id = ?',

@@ -22,16 +22,36 @@ export const authMiddleware = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const [users] = await pool.execute(
-      'SELECT id, name, email FROM users WHERE id = ?',
+    const [rows] = await pool.execute(
+      `SELECT u.id, u.name, u.email, u.role_id, r.name AS role_name, r.description AS role_description,
+              p.resource, p.action
+       FROM users u
+       LEFT JOIN roles r ON r.id = u.role_id
+       LEFT JOIN role_permissions rp ON rp.role_id = u.role_id
+       LEFT JOIN permissions p ON p.id = rp.permission_id
+       WHERE u.id = ?`,
       [decoded.id]
     );
 
-    if (!users[0]) {
+    if (!rows[0]) {
       return res.status(401).json({ error: 'Usuário não encontrado' });
     }
 
-    req.user = users[0];
+    const baseUser = rows[0];
+    const permissions = rows
+      .filter((row) => row.resource && row.action)
+      .map((row) => `${row.resource}:${row.action}`);
+
+    req.user = {
+      id: baseUser.id,
+      name: baseUser.name,
+      email: baseUser.email,
+      role_id: baseUser.role_id,
+      role_name: baseUser.role_name,
+      role_description: baseUser.role_description,
+      permissions: Array.from(new Set(permissions)),
+    };
+
     next();
   } catch (error) {
     logger.error('Auth middleware error:', error.message);

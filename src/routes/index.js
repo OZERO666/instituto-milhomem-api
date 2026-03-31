@@ -15,6 +15,9 @@ import sobreConfigRoutes from './sobre-config.js';
 import pagesConfigRoutes from './pages-config.js';
 import auditLogsRoutes from './audit-logs.js';
 import seoRoutes from './seo.js';
+import rolesRoutes from './roles.js';
+import permissionsRoutes from './permissions.js';
+import usersRoutes from './users.js';
 
 export default () => {
   // ✅ router criado DENTRO da factory — novo a cada chamada
@@ -36,6 +39,9 @@ export default () => {
   router.use('/pages-config', pagesConfigRoutes);
   router.use('/audit-logs', auditLogsRoutes);
   router.use('/seo-settings', seoRoutes);
+  router.use('/roles', rolesRoutes);
+  router.use('/permissions', permissionsRoutes);
+  router.use('/users', usersRoutes);
 
   return router;
 };

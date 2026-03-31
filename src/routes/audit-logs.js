@@ -2,13 +2,14 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import pool from '../db/mysql.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { checkPermission } from '../middleware/checkPermission.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
 
 const ACTION_TYPES_VALIDOS = ['CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT'];
 
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, checkPermission('dashboard', 'read'), async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit) || 100, 500);
     const [rows] = await pool.execute(
@@ -22,7 +23,7 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, checkPermission('dashboard', 'create'), async (req, res) => {
   try {
     const { action_type, collection_name, record_id, details } = req.body;
 

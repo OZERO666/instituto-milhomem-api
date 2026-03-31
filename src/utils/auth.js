@@ -13,8 +13,10 @@ export const comparePassword = async (password, hash) => {
   return await bcrypt.compare(password, hash);
 };
 
-export const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+export const generateToken = (payload) => {
+  const tokenPayload = typeof payload === 'object' ? payload : { id: payload };
+
+  return jwt.sign(tokenPayload, process.env.JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
   });
 };

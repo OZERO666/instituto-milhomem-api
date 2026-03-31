@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import pool from '../db/mysql.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { checkPermission } from '../middleware/checkPermission.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
@@ -32,7 +33,7 @@ router.get('/:page_name', async (req, res) => {
 });
 
 // PUT /seo-settings/:id — atualiza SEO de uma página (admin, autenticado)
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, checkPermission('dashboard', 'update'), async (req, res) => {
   try {
     const { meta_title, meta_description, keywords, og_image } = req.body;
     const now = new Date();
