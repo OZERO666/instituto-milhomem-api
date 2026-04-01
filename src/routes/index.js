@@ -18,6 +18,7 @@ import seoRoutes from './seo.js';
 import rolesRoutes from './roles.js';
 import permissionsRoutes from './permissions.js';
 import usersRoutes from './users.js';
+import settingsRoutes from './settings.js';
 
 export default () => {
   // ✅ router criado DENTRO da factory — novo a cada chamada
@@ -42,6 +43,7 @@ export default () => {
   router.use('/roles', rolesRoutes);
   router.use('/permissions', permissionsRoutes);
   router.use('/users', usersRoutes);
+  router.use('/settings', settingsRoutes);
 
   return router;
 };
