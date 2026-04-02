@@ -39,8 +39,10 @@ router.put('/', authMiddleware, async (req, res) => {
   try {
     for (const [key, value] of entries) {
       await pool.query(
-        'UPDATE site_settings SET setting_value = ? WHERE setting_key = ?',
-        [value, key]
+        `INSERT INTO site_settings (setting_key, setting_value)
+         VALUES (?, ?)
+         ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`,
+        [key, value]
       );
     }
 
