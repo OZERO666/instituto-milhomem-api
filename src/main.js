@@ -11,7 +11,7 @@ import morgan from 'morgan';
 import heroConfigRoutes from './routes/hero-config.js';
 import routes from './routes/index.js';
 import uploadRoutes from './routes/uploads.js';
-import { errorMiddleware, readLimiter, writeLimiter, sanitizeMiddleware } from './middleware/index.js';
+import { errorMiddleware, writeLimiter, sanitizeMiddleware } from './middleware/index.js';
 import logger from './utils/logger.js';
 
 const app = express();
@@ -96,12 +96,12 @@ app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting por método
+// Rate limiting apenas para escrita (anti-spam)
 app.use((req, res, next) => {
-  if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
-    return readLimiter(req, res, next);
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+    return writeLimiter(req, res, next);
   }
-  return writeLimiter(req, res, next);
+  next();
 });
 app.use(sanitizeMiddleware);
 
