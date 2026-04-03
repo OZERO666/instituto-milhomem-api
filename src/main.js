@@ -81,6 +81,17 @@ app.use((req, res, next) => {
 
 app.use(helmet());
 
+// Bloqueia indexação por mecanismos de busca
+app.use((_req, res, next) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+  next();
+});
+
+// robots.txt — bloqueia todos os crawlers
+app.get('/robots.txt', (_req, res) => {
+  res.type('text/plain').send('User-agent: *\nDisallow: /\n');
+});
+
 app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
