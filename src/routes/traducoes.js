@@ -5,51 +5,56 @@ import { authMiddleware } from '../middleware/auth.js';
 const router = Router();
 
 // ─── GET /traducoes/:tabela/:registroId?lang=en ──────────────────────────────
-// Retorna as traduções de um único registro no formato { campo: valor, ... }
 router.get('/:tabela/:registroId', async (req, res) => {
   const { tabela, registroId } = req.params;
   const { lang } = req.query;
 
   if (!lang || lang === 'pt' || lang.startsWith('pt-')) return res.json({});
 
-  const [rows] = await pool.execute(
-    'SELECT campo, valor FROM traducoes WHERE tabela = ? AND registro_id = ? AND locale = ?',
-    [tabela, String(registroId), lang],
-  );
+  try {
+    const [rows] = await pool.execute(
+      'SELECT campo, valor FROM traducoes WHERE tabela = ? AND registro_id = ? AND locale = ?',
+      [tabela, String(registroId), lang],
+    );
 
-  const result = {};
-  for (const row of rows) result[row.campo] = row.valor;
+    const result = {};
+    for (const row of rows) result[row.campo] = row.valor;
 
-  res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
-  res.json(result);
+    res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+    res.json(result);
+  } catch (err) {
+    // Tabela pode não existir ainda — retorna vazio sem derrubar o servidor
+    res.json({});
+  }
 });
 
 // ─── GET /traducoes/:tabela?lang=en ─────────────────────────────────────────
-// Retorna todas as traduções de uma tabela no formato { [registro_id]: { campo: valor } }
 router.get('/:tabela', async (req, res) => {
   const { tabela } = req.params;
   const { lang } = req.query;
 
   if (!lang || lang === 'pt' || lang.startsWith('pt-')) return res.json({});
 
-  const [rows] = await pool.execute(
-    'SELECT registro_id, campo, valor FROM traducoes WHERE tabela = ? AND locale = ?',
-    [tabela, lang],
-  );
+  try {
+    const [rows] = await pool.execute(
+      'SELECT registro_id, campo, valor FROM traducoes WHERE tabela = ? AND locale = ?',
+      [tabela, lang],
+    );
 
-  const result = {};
-  for (const row of rows) {
-    if (!result[row.registro_id]) result[row.registro_id] = {};
-    result[row.registro_id][row.campo] = row.valor;
+    const result = {};
+    for (const row of rows) {
+      if (!result[row.registro_id]) result[row.registro_id] = {};
+      result[row.registro_id][row.campo] = row.valor;
+    }
+
+    res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+    res.json(result);
+  } catch (err) {
+    res.json({});
   }
-
-  res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
-  res.json(result);
 });
 
 // ─── POST /traducoes ─────────────────────────────────────────────────────────
-// Salva/atualiza uma tradução. Requer autenticação.
-// Body: { tabela, registro_id, campo, locale, valor }
 router.post('/', authMiddleware, async (req, res) => {
   const { tabela, registro_id, campo, locale, valor } = req.body;
 
@@ -66,14 +71,18 @@ router.post('/', authMiddleware, async (req, res) => {
     return res.status(400).json({ error: `Locale não suportado: ${locale}` });
   }
 
-  await pool.execute(
-    `INSERT INTO traducoes (tabela, registro_id, campo, locale, valor)
-     VALUES (?, ?, ?, ?, ?)
-     ON DUPLICATE KEY UPDATE valor = VALUES(valor), updated_at = NOW()`,
-    [tabela, String(registro_id), campo, locale, valor ?? null],
-  );
+  try {
+    await pool.execute(
+      `INSERT INTO traducoes (tabela, registro_id, campo, locale, valor)
+       VALUES (?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE valor = VALUES(valor), updated_at = NOW()`,
+      [tabela, String(registro_id), campo, locale, valor ?? null],
+    );
 
-  res.json({ ok: true });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao salvar tradução. A tabela "traducoes" pode não existir ainda.' });
+  }
 });
 
 export default router;
