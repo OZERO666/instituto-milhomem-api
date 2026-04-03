@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS site_settings (
 INSERT IGNORE INTO site_settings (setting_key, setting_value, setting_type, description) VALUES
   ('primary_color',      '#C8A16E', 'string', 'Cor primária (dourado caramelo Leão) — botões, destaques, links'),
   ('secondary_color',    '#181B1E', 'string', 'Cor secundária (Preto Misterioso) — títulos, header escuro'),
-  ('accent_color',       '#E5C96A', 'string', 'Cor de destaque — hover de botões e badges'),
+  ('accent_color',       '#FFDEA4', 'string', 'Cor de destaque (Pêssego Amarelo) — hover de botões e badges'),
   ('background_color',   '#FFFFFF', 'string', 'Cor de fundo principal da página'),
   ('foreground_color',   '#1A1A1A', 'string', 'Cor do texto principal'),
   ('site_name',          'Instituto Milhomem', 'string', 'Nome do site — exibido em títulos e meta tags'),
