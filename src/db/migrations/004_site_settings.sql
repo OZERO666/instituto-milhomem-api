@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS site_settings (
 
 -- Valores padrão (IGNORE caso já existam)
 INSERT IGNORE INTO site_settings (setting_key, setting_value, setting_type, description) VALUES
-  ('primary_color',      '#D4AF37', 'string', 'Cor primária (ouro) — botões, destaques, links'),
-  ('secondary_color',    '#0A192F', 'string', 'Cor secundária (marinho) — títulos, header escuro'),
+  ('primary_color',      '#C8A16E', 'string', 'Cor primária (dourado caramelo Leão) — botões, destaques, links'),
+  ('secondary_color',    '#181B1E', 'string', 'Cor secundária (Preto Misterioso) — títulos, header escuro'),
   ('accent_color',       '#E5C96A', 'string', 'Cor de destaque — hover de botões e badges'),
   ('background_color',   '#FFFFFF', 'string', 'Cor de fundo principal da página'),
   ('foreground_color',   '#1A1A1A', 'string', 'Cor do texto principal'),
