@@ -1,5 +1,5 @@
 // src/components/Header.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
@@ -18,6 +18,24 @@ const Header = ({ siteConfig }) => {
   const config                              = useContatoConfig();
   const { settings }                        = useSiteSettings();
   const logoHeight                          = Number(settings?.logo_size_header) || 56;
+  const headerRef                           = useRef(null);
+
+  // Publica a altura real do header como CSS var --header-h
+  // Usado pelo spacer no AppShell para evitar sobreposição do conteúdo
+  useLayoutEffect(() => {
+    const update = () => {
+      if (headerRef.current) {
+        document.documentElement.style.setProperty(
+          '--header-h',
+          headerRef.current.offsetHeight + 'px'
+        );
+      }
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    if (headerRef.current) ro.observe(headerRef.current);
+    return () => ro.disconnect();
+  }, [logoHeight]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -32,9 +50,12 @@ const Header = ({ siteConfig }) => {
   const logoUrl = siteConfig?.logo_url || LOGO_URL;
 
   return (
-    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-      scrolled ? 'bg-secondary/95 backdrop-blur-md shadow-lg shadow-black/20' : 'bg-secondary'
-    }`}>
+    <header
+      ref={headerRef}
+      className={`fixed inset-x-0 top-0 z-50 w-full transition-all duration-300 ${
+        scrolled ? 'bg-secondary/95 backdrop-blur-md shadow-lg shadow-black/20' : 'bg-secondary'
+      }`}
+    >
       <div className="container-custom flex items-center justify-between py-4">
 
         {/* Logo */}
