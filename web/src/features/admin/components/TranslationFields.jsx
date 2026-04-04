@@ -47,8 +47,7 @@ const TranslationFields = ({ tabela, registroId, fields = [], originalData = {} 
     if (!registroId) return;
     setLoadingLang(locale);
     try {
-      const res = await api.get(`/traducoes/${tabela}/${encodeURIComponent(registroId)}?lang=${locale}`);
-      const data = await res.json();
+      const data = await api.get(`/traducoes/${tabela}/${encodeURIComponent(registroId)}?lang=${locale}`);
       setTranslations(prev => ({ ...prev, [locale]: data || {} }));
     } catch (e) {
       console.error(`Erro ao buscar traduções ${locale}:`, e);
