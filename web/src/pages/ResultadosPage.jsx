@@ -100,7 +100,7 @@ const ResultadosPage = () => {
                 <button
                   key={filter.id}
                   onClick={() => setActiveThemeId(filter.id)}
-                  className={`px-8 py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-all duration-300 active:scale-95 border ${
+                  className={`px-4 sm:px-8 py-2 sm:py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-all duration-300 active:scale-95 border ${
                     activeThemeId === filter.id
                       ? 'bg-primary text-[#181B1E] border-primary shadow-lg'
                       : 'bg-white text-foreground border-primary/30 hover:border-primary hover:text-primary'
@@ -158,7 +158,7 @@ const ResultadosPage = () => {
             )}
 
             {/* CTA INSTAGRAM */}
-            <div className="mt-24 bg-[#181B1E] rounded-2xl p-12 text-center border border-primary shadow-2xl relative overflow-hidden">
+            <div className="mt-12 md:mt-24 bg-[#181B1E] rounded-2xl p-6 sm:p-12 text-center border border-primary shadow-2xl relative overflow-hidden">
 
               <div className="relative z-10">
                 <h3 className="text-3xl font-bold mb-4 text-white">{t('resultados.videos_title', 'Vídeos de Depoimentos')}</h3>

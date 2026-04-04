@@ -118,7 +118,7 @@ const BlogPage = () => {
             <div className="flex flex-wrap justify-center gap-4 mb-16">
               <button
                 onClick={() => setActiveCategory('all')}
-                className={`px-8 py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-all duration-300 active:scale-95 border ${
+                className={`px-4 sm:px-8 py-2 sm:py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-all duration-300 active:scale-95 border ${
                   activeCategory === 'all'
                     ? 'bg-primary text-primary-foreground border-primary shadow-lg'
                     : 'bg-card text-foreground border-border hover:border-primary hover:text-primary'
@@ -130,7 +130,7 @@ const BlogPage = () => {
                 <button
                   key={category.id}
                   onClick={() => setActiveCategory(category.id)}
-                  className={`px-8 py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-all duration-300 active:scale-95 border ${
+                  className={`px-4 sm:px-8 py-2 sm:py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-all duration-300 active:scale-95 border ${
                     activeCategory === category.id
                       ? 'bg-primary text-primary-foreground border-primary shadow-lg'
                       : 'bg-card text-foreground border-border hover:border-primary hover:text-primary'

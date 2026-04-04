@@ -128,7 +128,7 @@ const ServiceDetailPage = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/90 to-transparent" />
             </>
           )}
-          <div className="container-custom relative z-10 py-24 mt-16">
+          <div className="container-custom relative z-10 py-12 md:py-24 mt-8 md:mt-16">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -136,12 +136,12 @@ const ServiceDetailPage = () => {
               className="max-w-3xl"
             >
               {/* Breadcrumb */}
-              <div className="flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-widest mb-6">
+              <div className="flex flex-wrap items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-widest mb-6">
                 <Link to="/" className="hover:text-primary transition-colors">{pageConfig.breadcrumb_home}</Link>
                 <span>/</span>
                 <Link to="/servicos" className="hover:text-primary transition-colors">{pageConfig.breadcrumb_services}</Link>
                 <span>/</span>
-                <span className="text-primary">{displayService.nome}</span>
+                <span className="text-primary min-w-0 truncate">{displayService.nome}</span>
               </div>
 
               <div className="flex items-center gap-3 mb-4">

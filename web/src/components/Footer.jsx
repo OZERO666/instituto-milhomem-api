@@ -63,7 +63,7 @@ const Footer = ({ siteConfig }) => {
     <footer className="bg-secondary text-white">
 
       {/* ── CORPO ── */}
-      <div className="container-custom py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="container-custom py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
 
         {/* Coluna 1 — Logo + descrição */}
         <div className="lg:col-span-1 flex flex-col gap-5">
@@ -159,7 +159,7 @@ const Footer = ({ siteConfig }) => {
       <div className="border-t border-white/5">
         <div className="container-custom py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/30">
           <span>© {currentYear} {footerConfig.rights_text}</span>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">
               {t('footer.privacy_policy', 'Política de Privacidade')}
             </Link>

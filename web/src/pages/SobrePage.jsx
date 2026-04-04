@@ -62,7 +62,7 @@ const SobrePage = () => {
               <span className="text-primary font-bold uppercase tracking-[0.2em] text-sm mb-4 block">
                 {config.hero_badge}
               </span>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold text-white mb-6">
                 {config.hero_title}
               </h1>
               <p className="text-xl text-white/90 max-w-2xl mx-auto font-light leading-relaxed">
@@ -75,7 +75,7 @@ const SobrePage = () => {
         {/* DOCTOR SECTION */}
         <section className="section-padding bg-background">
           <div className="container-custom">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
