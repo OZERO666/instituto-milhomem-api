@@ -213,7 +213,7 @@ const HomePage = () => {
         {/* ══════════════════════════════════════════════════════════════════
             HERO
         ══════════════════════════════════════════════════════════════════ */}
-        <section className="relative min-h-[100dvh] flex flex-col overflow-hidden">
+        <section className="relative min-h-[calc(100svh-72px)] flex flex-col overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img
               src={heroConfig?.imagem_fundo?.trim() || ''}
@@ -235,7 +235,7 @@ const HomePage = () => {
             style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.15), transparent 70%)' }}
           />
 
-          <div className="container-custom relative z-10 flex-1 flex flex-col justify-center pt-24 pb-10 md:pt-32 md:pb-20">
+          <div className="container-custom relative z-10 flex-1 flex flex-col justify-center py-8 md:py-20">
             {heroLoading ? (
               /* ── Skeleton enquanto carrega ── */
               <div className="max-w-3xl space-y-6 animate-pulse">
