@@ -72,7 +72,6 @@ const ContatoPage = () => {
           telefone:     data.telefone,
           mensagem:     data.mensagem,
           tipo_servico: data.tipo_servico,
-          lido:         false,
         }),
       });
       if (!res.ok) throw new Error('server');
