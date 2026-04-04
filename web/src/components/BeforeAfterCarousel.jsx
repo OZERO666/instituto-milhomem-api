@@ -22,8 +22,33 @@ const BeforeAfterCarousel = ({ allLabel = 'Todos', emptyMessage = 'Nenhum result
         return true;
       },
     },
-    [Autoplay({ delay: 4000, stopOnInteraction: true })]
+    [Autoplay({ delay: 4000, stopOnInteraction: false })]
   );
+
+  // Pausa autoplay enquanto o usuário arrasta o slider do card
+  useEffect(() => {
+    if (!emblaApi) return;
+    const autoplay = emblaApi.plugins()?.autoplay;
+    if (!autoplay) return;
+
+    const handlePointerDown = (e) => {
+      if (e.target && e.target.closest('[data-no-drag]')) {
+        autoplay.stop();
+      }
+    };
+    const handlePointerUp = () => {
+      autoplay.play();
+    };
+
+    const root = emblaApi.rootNode();
+    root.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('pointerup', handlePointerUp);
+
+    return () => {
+      root.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+  }, [emblaApi]);
 
   // Busca temas da galeria
   useEffect(() => {
