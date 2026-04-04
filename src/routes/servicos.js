@@ -54,6 +54,9 @@ router.post('/', authMiddleware, checkPermission('blog', 'create'), async (req, 
       ordem,
       conteudo,
     } = req.body;
+
+    if (slug) {
+      const [existing] = await pool.execute('SELECT id FROM servicos WHERE slug = ? LIMIT 1', [slug]);
       if (existing.length > 0) {
         return res.status(409).json({ error: `O slug "${slug}" já está em uso por outro serviço.` });
       }
