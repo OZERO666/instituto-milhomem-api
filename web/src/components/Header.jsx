@@ -52,9 +52,7 @@ const Header = ({ siteConfig }) => {
   return (
     <header
       ref={headerRef}
-      className={`fixed inset-x-0 top-0 z-50 w-full transition-all duration-300 ${
-        scrolled ? 'bg-secondary/95 backdrop-blur-md shadow-lg shadow-black/20' : 'bg-secondary'
-      }`}
+      className="w-full bg-secondary"
     >
       <div className="container-custom flex items-center justify-between py-4">
 
