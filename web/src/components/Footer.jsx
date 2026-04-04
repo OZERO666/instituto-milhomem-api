@@ -169,8 +169,6 @@ const Footer = ({ siteConfig }) => {
             <Link to="/termos-de-uso" className="hover:text-primary transition-colors">
               {t('footer.terms_of_use', 'Termos de Uso')}
             </Link>
-            <span className="text-white/10">|</span>
-            <span>{footerConfig.credits_text}</span>
           </div>
         </div>
       </div>
