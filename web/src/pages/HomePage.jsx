@@ -269,7 +269,7 @@ const HomePage = () => {
         {/* ══════════════════════════════════════════════════════════════════
             HERO
         ══════════════════════════════════════════════════════════════════ */}
-        <section className="relative flex flex-col overflow-hidden min-h-[100svh]">
+        <section className="relative flex flex-col overflow-hidden min-h-[calc(100svh-88px)]">
           <div className="absolute inset-0 z-0">
             <img
               src={heroConfig?.imagem_fundo?.trim() || ''}

@@ -200,6 +200,8 @@ const AppShell = ({ siteConfig }) => {
     <>
       <ScrollToTop />
       {!hideLayout && <Header siteConfig={siteConfig} />}
+      {/* Spacer dinâmico — compensa o header fixed (altura medida via CSS var --header-h) */}
+      {!hideLayout && <div style={{ height: 'var(--header-h, 88px)' }} aria-hidden="true" />}
       <div className="overflow-x-hidden">
         <Suspense fallback={<PageLoader logoUrl={siteConfig?.logo_url} />}>
           <AnimatedRoutes siteConfig={siteConfig} />

@@ -28,7 +28,9 @@ const Header = ({ siteConfig }) => {
   const logoUrl = siteConfig?.logo_url || LOGO_URL;
 
   return (
-    <header className="w-full bg-secondary">
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      scrolled ? 'bg-secondary/95 backdrop-blur-md shadow-lg shadow-black/20' : 'bg-secondary'
+    }`}>
       <div className="container-custom flex items-center justify-between py-4">
 
         {/* Logo — aumentada para h-14 */}
