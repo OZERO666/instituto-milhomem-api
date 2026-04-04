@@ -11,6 +11,11 @@ uploads/
 # Logs
 logs/
 *.log
+start-out.txt
+start-err.txt
+
+# Migrations locais
+src/db/migrations/000_schema_completo.sql
 
 # Sistema
 .DS_Store
