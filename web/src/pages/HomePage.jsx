@@ -745,26 +745,27 @@ const HomePage = () => {
             FAQ
         ══════════════════════════════════════════════════════════════════ */}
         {faqItems.length > 0 && (
-        <section className="section-padding bg-background border-t border-border/40">
-          <div className="container-custom">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-              <motion.div className="max-w-xl" {...fadeLeft()}>
-                <SectionBadge label="Tire suas Dúvidas" />
-                <h2 className="heading-lg text-foreground">Perguntas Frequentes</h2>
-                <GoldDivider className="mt-4 max-w-[160px]" />
-              </motion.div>
-              <motion.div {...fadeRight(0.2)}>
-                <Link
-                  to="/faq"
-                  className="inline-flex items-center gap-2 text-primary font-bold
-                             hover:text-primary/70 transition-colors duration-300
-                             uppercase tracking-widest text-xs group"
-                >
-                  Ver todas as perguntas
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-                </Link>
-              </motion.div>
-            </div>
+        <section className="section-padding bg-muted relative overflow-hidden">
+          <div
+            aria-hidden
+            className="absolute left-0 top-0 w-full h-px
+                       bg-gradient-to-r from-transparent via-primary/20 to-transparent"
+          />
+          <div
+            aria-hidden
+            className="absolute right-0 bottom-0 w-72 h-72 rounded-full opacity-[0.03]
+                       translate-y-16 -translate-x-16 border border-primary"
+            style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.2), transparent 70%)' }}
+          />
+          <div className="container-custom relative z-10">
+            <motion.div className="text-center mb-14" {...fadeUp()}>
+              <SectionBadge label="Tire suas Dúvidas" center />
+              <h2 className="heading-lg text-foreground mb-4">Perguntas Frequentes</h2>
+              <GoldDivider className="mb-5 max-w-[140px] mx-auto" />
+              <p className="text-muted-foreground text-base max-w-xl mx-auto leading-relaxed">
+                Tudo o que você precisa saber antes de dar o primeiro passo.
+              </p>
+            </motion.div>
 
             <div className="max-w-3xl mx-auto space-y-3">
               {faqItems.map((item, i) => (
@@ -772,23 +773,35 @@ const HomePage = () => {
                   className="bg-card border border-border/60 rounded-xl overflow-hidden"
                 >
                   <button
-                    className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left hover:bg-muted/40 transition-colors"
+                    className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left hover:bg-muted/40 transition-colors"
                     onClick={() => setFaqOpenIndex(faqOpenIndex === i ? null : i)}
                     aria-expanded={faqOpenIndex === i}
                   >
-                    <span className="font-bold text-foreground text-sm">{item.pergunta}</span>
+                    <span className="font-bold text-foreground text-sm md:text-base leading-snug">{item.pergunta}</span>
                     <ChevronDown
-                      className={`w-4 h-4 text-primary flex-shrink-0 transition-transform duration-200 ${faqOpenIndex === i ? 'rotate-180' : ''}`}
+                      className={`w-5 h-5 text-primary flex-shrink-0 transition-transform duration-200 ${faqOpenIndex === i ? 'rotate-180' : ''}`}
                     />
                   </button>
                   {faqOpenIndex === i && (
-                    <div className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border/40 pt-4">
+                    <div className="px-6 pb-6 pt-1 text-sm md:text-base text-muted-foreground leading-relaxed border-t border-border/40">
                       {item.resposta}
                     </div>
                   )}
                 </motion.div>
               ))}
             </div>
+
+            <motion.div className="text-center mt-12" {...fadeUp(0.2)}>
+              <Link
+                to="/faq"
+                className="inline-flex items-center gap-2 text-primary font-bold
+                           hover:text-primary/70 transition-colors duration-300
+                           uppercase tracking-widest text-xs group"
+              >
+                Ver todas as perguntas
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              </Link>
+            </motion.div>
           </div>
         </section>
         )}
