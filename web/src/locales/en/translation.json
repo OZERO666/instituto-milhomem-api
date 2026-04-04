@@ -130,6 +130,20 @@
     "back_home":        "Back to home",
     "see_terms":        "See Terms of Use →"
   },
+  "faq": {
+    "page_title":      "Frequently Asked Questions | Instituto Milhomem",
+    "meta_desc":       "Get answers to your questions about hair transplant, beard transplant and hair treatments at Instituto Milhomem in Goiânia.",
+    "meta_keywords":   "hair transplant FAQ, frequently asked questions hair transplant, Instituto Milhomem FAQ",
+    "badge":           "Get your questions answered",
+    "heading_1":       "Frequently",
+    "heading_2":       "Asked Questions",
+    "subtitle":        "Everything you need to know before taking the first step towards your hair transformation.",
+    "empty":           "No questions registered yet.",
+    "cta_title":       "Still have questions?",
+    "cta_text":        "Talk to our team on WhatsApp — we reply quickly.",
+    "cta_button":      "Talk to a Specialist",
+    "whatsapp_msg":    "Hello! I would like to ask a question about the procedures at Instituto Milhomem."
+  },
   "terms": {
     "page_title":       "Terms of Use | Instituto Milhomem",
     "meta_desc":        "Terms and conditions of use for the Instituto Milhomem website.",

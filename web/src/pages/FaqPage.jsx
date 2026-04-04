@@ -1,6 +1,7 @@
 // src/pages/FaqPage.jsx
 import React, { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO.jsx';
 import WhatsAppButton from '@/components/WhatsAppButton.jsx';
 import api from '@/lib/apiServerClient';
@@ -33,13 +34,14 @@ const FaqItem = ({ item, isOpen, onToggle }) => (
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 const FaqPage = () => {
+  const { t } = useTranslation();
   const [faqItems, setFaqItems] = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [openIndex, setOpenIndex] = useState(null);
   const config = useContatoConfig();
   const whatsappUrl = buildWhatsappUrl(
     config.whatsapp,
-    'Olá! Gostaria de tirar uma dúvida sobre os procedimentos do Instituto Milhomem.'
+    t('faq.whatsapp_msg')
   );
 
   useEffect(() => {
@@ -53,9 +55,9 @@ const FaqPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <SEO
-        title="Perguntas Frequentes | Instituto Milhomem"
-        description="Tire suas dúvidas sobre transplante capilar, transplante de barba e tratamentos capilares no Instituto Milhomem em Goiânia."
-        keywords="transplante capilar dúvidas, FAQ transplante capilar, perguntas frequentes transplante, Instituto Milhomem FAQ"
+        title={t('faq.page_title')}
+        description={t('faq.meta_desc')}
+        keywords={t('faq.meta_keywords')}
         type="website"
       />
       <WhatsAppButton />
@@ -68,14 +70,14 @@ const FaqPage = () => {
             <div className="max-w-3xl mx-auto text-center mb-16">
               <div className="flex items-center justify-center gap-3 mb-4">
                 <div className="w-8 h-px bg-primary" />
-                <span className="text-primary font-bold uppercase tracking-widest text-sm">Tire suas dúvidas</span>
+                <span className="text-primary font-bold uppercase tracking-widest text-sm">{t('faq.badge')}</span>
                 <div className="w-8 h-px bg-primary" />
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-foreground">
-                Perguntas <span className="text-primary">Frequentes</span>
+                {t('faq.heading_1')} <span className="text-primary">{t('faq.heading_2')}</span>
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Tudo o que você precisa saber antes de dar o primeiro passo rumo à transformação capilar.
+                {t('faq.subtitle')}
               </p>
             </div>
 
@@ -89,7 +91,7 @@ const FaqPage = () => {
                 </div>
               ) : faqItems.length === 0 ? (
                 <div className="text-center py-20 bg-card rounded-2xl border border-border">
-                  <p className="text-muted-foreground font-medium text-lg">Nenhuma pergunta cadastrada ainda.</p>
+                  <p className="text-muted-foreground font-medium text-lg">{t('faq.empty')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -108,10 +110,10 @@ const FaqPage = () => {
               {!loading && faqItems.length > 0 && (
                 <div className="mt-14 bg-secondary rounded-2xl p-8 text-center border border-primary/20">
                   <h2 className="text-xl font-bold text-white mb-2">
-                    Ainda ficou alguma dúvida?
+                    {t('faq.cta_title')}
                   </h2>
                   <p className="text-white/60 text-sm mb-6">
-                    Fale com nossa equipe pelo WhatsApp — respondemos rapidamente.
+                    {t('faq.cta_text')}
                   </p>
                   <a
                     href={whatsappUrl}
@@ -121,7 +123,7 @@ const FaqPage = () => {
                                bg-primary text-secondary font-bold text-sm uppercase tracking-widest
                                hover:bg-primary/90 transition-colors shadow-lg"
                   >
-                    Falar com Especialista
+                    {t('faq.cta_button')}
                   </a>
                 </div>
               )}

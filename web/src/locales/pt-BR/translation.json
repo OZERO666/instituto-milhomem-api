@@ -130,6 +130,20 @@
     "back_home":        "Voltar ao início",
     "see_terms":        "Ver Termos de Uso →"
   },
+  "faq": {
+    "page_title":      "Perguntas Frequentes | Instituto Milhomem",
+    "meta_desc":       "Tire suas dúvidas sobre transplante capilar, transplante de barba e tratamentos capilares no Instituto Milhomem em Goiânia.",
+    "meta_keywords":   "transplante capilar dúvidas, FAQ transplante capilar, perguntas frequentes transplante, Instituto Milhomem FAQ",
+    "badge":           "Tire suas dúvidas",
+    "heading_1":       "Perguntas",
+    "heading_2":       "Frequentes",
+    "subtitle":        "Tudo o que você precisa saber antes de dar o primeiro passo rumo à transformação capilar.",
+    "empty":           "Nenhuma pergunta cadastrada ainda.",
+    "cta_title":       "Ainda ficou alguma dúvida?",
+    "cta_text":        "Fale com nossa equipe pelo WhatsApp — respondemos rapidamente.",
+    "cta_button":      "Falar com Especialista",
+    "whatsapp_msg":    "Olá! Gostaria de tirar uma dúvida sobre os procedimentos do Instituto Milhomem."
+  },
   "terms": {
     "page_title":       "Termos de Uso | Instituto Milhomem",
     "meta_desc":        "Termos e condições de uso do site do Instituto Milhomem.",
