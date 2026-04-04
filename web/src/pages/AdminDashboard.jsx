@@ -26,10 +26,11 @@ import { useDepoimentos }  from '@/features/admin/hooks/useDepoimentos.js';
 import { useEstatisticas } from '@/features/admin/hooks/useEstatisticas.js';
 import { useContato }      from '@/features/admin/hooks/useContato.js';
 import { useSettings }     from '@/features/admin/hooks/useSettings.js';
+import { useFaq }          from '@/features/admin/hooks/useFaq.js';
 import {
   OverviewTab, BookingsTab, ServicosTab, GaleriaTab, BlogTab,
   DepoimentosTab, EstatisticasTab, ContatoTab, BrandingTab,
-  SeoTab, PagesTab, SobreTab, HeroTab, UsersRolesTab, SettingsTab,
+  SeoTab, PagesTab, SobreTab, HeroTab, UsersRolesTab, SettingsTab, FaqTab,
 } from '@/features/admin/tabs';
 
 const AdminDashboard = () => {
@@ -76,12 +77,13 @@ const AdminDashboard = () => {
   const { isLoading: loadingEstatisticas, statsForm, fetchEstatisticas, handleStatsSubmit } = useEstatisticas(currentUser);
   const { contactConfig, isLoading: loadingContato, contactForm, fetchContato, handleContactSubmit } = useContato(currentUser);
   const { settingsForm, saveStatus: settingsSaveStatus, fetchSettings, handleSettingsSubmit } = useSettings();
+  const { faqItems, isLoading: loadingFaq, faqForm, editingItem: faqEditing, setEditingItem: setFaqEditing, fetchFaq, handleFaqSubmit } = useFaq(currentUser);
 
   // ─── Unsaved guard ─────────────────────────────────────────────────────
   const anyDirty = [
     heroForm, presetForm, sobreForm, pagesForm, seoForm,
     serviceForm, galleryForm, themeForm, categoryForm,
-    testimonialForm, statsForm, contactForm, settingsForm,
+    testimonialForm, statsForm, contactForm, settingsForm, faqForm,
   ].some(f => f.formState.isDirty);
   const { guardTab, showDialog: showUnsavedDialog, confirmLeave, cancelLeave } = useUnsavedGuard(anyDirty);
 
@@ -106,6 +108,7 @@ const AdminDashboard = () => {
         case 'gallery':      return fetchGaleria();
         case 'blog':         return fetchBlog();
         case 'testimonials': return fetchDepoimentos();
+        case 'faq':          return fetchFaq();
         case 'stats':        return fetchEstatisticas();
         case 'contact':
         case 'branding':     return fetchContato();
@@ -134,7 +137,7 @@ const AdminDashboard = () => {
     activeTab,
     fetchSeo, fetchHero, fetchSobre, fetchPages,
     fetchBookings, fetchServicos, fetchGaleria, fetchBlog,
-    fetchDepoimentos, fetchEstatisticas, fetchContato, fetchAuditLogs, fetchSettings, canAccess,
+    fetchDepoimentos, fetchFaq, fetchEstatisticas, fetchContato, fetchAuditLogs, fetchSettings, canAccess,
   ]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
@@ -145,10 +148,11 @@ const AdminDashboard = () => {
       case 'servicos':        return handleServicosSubmit(data, fetchData);
       case 'galeria':         return handleGaleriaSubmit(data, fetchData);
       case 'depoimentos':     return handleDepoimentosSubmit(data, fetchData);
+      case 'faq':             return handleFaqSubmit(data, fetchData);
       case 'blog-categorias': return handleCategorySubmit(data, fetchData);
       default: console.error('Unknown collection in handleGenericSubmit:', collection);
     }
-  }, [handleServicosSubmit, handleGaleriaSubmit, handleDepoimentosSubmit, handleCategorySubmit, fetchData]);
+  }, [handleServicosSubmit, handleGaleriaSubmit, handleDepoimentosSubmit, handleFaqSubmit, handleCategorySubmit, fetchData]);
 
   // ─── Delete wrapper ────────────────────────────────────────────────────────
   const confirmDelete = useCallback(
@@ -236,6 +240,15 @@ const AdminDashboard = () => {
                 testimonials={testimonials} isLoading={loadingDepoimentos}
                 testimonialForm={testimonialForm}
                 editingItem={depEditing} setEditingItem={setDepEditing}
+                onGenericSubmit={handleGenericSubmit} onDelete={handleDelete}
+              />
+            </TabsContent>
+
+            <TabsContent value="faq">
+              <FaqTab
+                faqItems={faqItems} isLoading={loadingFaq}
+                faqForm={faqForm}
+                editingItem={faqEditing} setEditingItem={setFaqEditing}
                 onGenericSubmit={handleGenericSubmit} onDelete={handleDelete}
               />
             </TabsContent>

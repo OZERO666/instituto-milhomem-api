@@ -12,6 +12,7 @@ export const NAV_ITEMS = [
   { name: 'Sobre',      path: '/sobre',      key: 'about'    },
   { name: 'Resultados', path: '/resultados', key: 'results'  },
   { name: 'Blog',       path: '/blog',       key: 'blog'     },
+  { name: 'FAQ',        path: '/faq',        key: 'faq'      },
   { name: 'Contato',    path: '/contato',    key: 'contact'  },
 ];
 

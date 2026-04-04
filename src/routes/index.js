@@ -21,6 +21,7 @@ import usersRoutes from './users.js';
 import settingsRoutes from './settings.js';
 import traducoesRoutes from './traducoes.js';
 import utilsRoutes from './utils.js';
+import faqRoutes from './faq.js';
 
 export default () => {
   // ✅ router criado DENTRO da factory — novo a cada chamada
@@ -48,6 +49,7 @@ export default () => {
   router.use('/settings', settingsRoutes);
   router.use('/traducoes', traducoesRoutes);
   router.use('/utils', utilsRoutes);
+  router.use('/faq', faqRoutes);
 
   return router;
 };

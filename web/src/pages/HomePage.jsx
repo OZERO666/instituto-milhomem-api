@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, CheckCircle2, MapPin, Phone, Mail, Clock,
-  Star, Shield, Award, ChevronRight, Gem,
+  Star, Shield, Award, ChevronRight, Gem, ChevronDown, HelpCircle,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -172,6 +172,8 @@ const HomePage = () => {
   const [blogLoading,    setBlogLoading]    = useState(true);
   const [heroLoading,    setHeroLoading]    = useState(true);
   const [heroConfig,     setHeroConfig]     = useState(null);
+  const [faqItems,       setFaqItems]       = useState([]);
+  const [faqOpenIndex,   setFaqOpenIndex]   = useState(null);
   const { apply: applyHeroTrad } = useTraducoes('hero_config', heroConfig?.id);
   const { apply: applyContactTrad } = useTraducoes('contato_config', contactConfig?.id);
 
@@ -186,6 +188,7 @@ const HomePage = () => {
           configRes,
           testimonialsRes,
           heroRes,
+          faqRes,
         ] = await Promise.all([
           api.fetch('/artigos').then(r => r.json()),
           api.fetch('/servicos').then(r => r.json()),
@@ -193,6 +196,7 @@ const HomePage = () => {
           api.fetch('/contato-config').then(r => r.json()),
           api.fetch('/depoimentos').then(r => r.json()),
           api.fetch('/hero-config').then(r => r.json()).catch(() => null),
+          api.fetch('/faq').then(r => r.json()).catch(() => []),
         ]);
 
         if (cancelled) return;
@@ -217,6 +221,7 @@ const HomePage = () => {
 
         const hc = Array.isArray(heroRes) ? heroRes[0] : heroRes;
         if (hc && hc.id) setHeroConfig(hc);
+        setFaqItems(Array.isArray(faqRes) ? faqRes.slice(0, 6) : []);
       } catch (err) {
         if (!cancelled) console.error('Erro ao buscar dados da homepage:', err);
       } finally {
@@ -732,6 +737,58 @@ const HomePage = () => {
                 <p className="text-sm text-muted-foreground/50 mt-1">{homePageConfig.blog.empty_subtitle}</p>
               </div>
             )}
+          </div>
+        </section>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════════
+            FAQ
+        ══════════════════════════════════════════════════════════════════ */}
+        {faqItems.length > 0 && (
+        <section className="section-padding bg-background border-t border-border/40">
+          <div className="container-custom">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+              <motion.div className="max-w-xl" {...fadeLeft()}>
+                <SectionBadge label="Tire suas Dúvidas" />
+                <h2 className="heading-lg text-foreground">Perguntas Frequentes</h2>
+                <GoldDivider className="mt-4 max-w-[160px]" />
+              </motion.div>
+              <motion.div {...fadeRight(0.2)}>
+                <Link
+                  to="/faq"
+                  className="inline-flex items-center gap-2 text-primary font-bold
+                             hover:text-primary/70 transition-colors duration-300
+                             uppercase tracking-widest text-xs group"
+                >
+                  Ver todas as perguntas
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                </Link>
+              </motion.div>
+            </div>
+
+            <div className="max-w-3xl mx-auto space-y-3">
+              {faqItems.map((item, i) => (
+                <motion.div key={item.id} {...fadeUp(i * 0.06)}
+                  className="bg-card border border-border/60 rounded-xl overflow-hidden"
+                >
+                  <button
+                    className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left hover:bg-muted/40 transition-colors"
+                    onClick={() => setFaqOpenIndex(faqOpenIndex === i ? null : i)}
+                    aria-expanded={faqOpenIndex === i}
+                  >
+                    <span className="font-bold text-foreground text-sm">{item.pergunta}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-primary flex-shrink-0 transition-transform duration-200 ${faqOpenIndex === i ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+                  {faqOpenIndex === i && (
+                    <div className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border/40 pt-4">
+                      {item.resposta}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
         )}

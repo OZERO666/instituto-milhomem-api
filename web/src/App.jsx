@@ -30,6 +30,7 @@ const AdminDashboard   = lazy(() => import('@/pages/AdminDashboard.jsx'));
 const UnauthorizedPage = lazy(() => import('@/pages/UnauthorizedPage.jsx'));
 const PrivacidadePage  = lazy(() => import('@/pages/PrivacidadePage.jsx'));
 const TermosUsoPage    = lazy(() => import('@/pages/TermosUsoPage.jsx'));
+const FaqPage          = lazy(() => import('@/pages/FaqPage.jsx'));
 
 // ─── Layout padrão (Header + Footer) ─────────────────────────────────────────
 const MainLayout = ({ children, siteConfig }) => (
@@ -169,6 +170,10 @@ const AnimatedRoutes = ({ siteConfig }) => {
         <Route
           path="/contato"
           element={<MainLayout siteConfig={siteConfig}><ContatoPage /></MainLayout>}
+        />
+        <Route
+          path="/faq"
+          element={<MainLayout siteConfig={siteConfig}><FaqPage /></MainLayout>}
         />
 
         {/* Sem Header/Footer */}

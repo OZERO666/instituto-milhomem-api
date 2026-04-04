@@ -15,6 +15,7 @@ import {
   Cpu,
   Heart,
   Settings2,
+  HelpCircle,
 } from 'lucide-react';
 
 export const ADMIN_TABS = [
@@ -24,6 +25,7 @@ export const ADMIN_TABS = [
   { value: 'gallery', icon: Image, label: 'Galeria', resource: 'gallery', action: 'read' },
   { value: 'blog', icon: FileText, label: 'Blog', resource: 'blog', action: 'read' },
   { value: 'testimonials', icon: MessageSquare, label: 'Depoimentos', resource: 'testimonials', action: 'read' },
+  { value: 'faq',          icon: HelpCircle,    label: 'FAQ',          resource: 'dashboard',    action: 'read' },
   { value: 'stats', icon: BarChart3, label: 'Estatísticas', resource: 'dashboard', action: 'read' },
   { value: 'users', icon: UserCircle, label: 'Usuários', resource: 'users', action: 'read' },
   { value: 'contact', icon: MapPin, label: 'Contato', resource: 'dashboard', action: 'read' },

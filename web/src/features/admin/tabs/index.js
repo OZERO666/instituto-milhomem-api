@@ -13,3 +13,4 @@ export { default as SobreTab } from './SobreTab.jsx';
 export { default as HeroTab } from './HeroTab.jsx';
 export { default as UsersRolesTab } from './UsersRolesTab.jsx';
 export { default as SettingsTab } from './SettingsTab.jsx';
+export { default as FaqTab } from './FaqTab.jsx';
