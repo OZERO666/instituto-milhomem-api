@@ -1,16 +1,4 @@
-import nodemailer from 'nodemailer';
 import logger from './logger.js';
-
-// Transportador SMTP — configurado via variáveis de ambiente
-const transport = nodemailer.createTransport({
-  host:   process.env.SMTP_HOST || 'smtp.hostinger.com',
-  port:   Number(process.env.SMTP_PORT) || 465,
-  secure: true, // SSL na porta 465
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
 
 /**
  * Envia um email.
@@ -27,6 +15,19 @@ export async function sendMail({ to, subject, html, replyTo }) {
   }
 
   try {
+    // Import dinâmico para não quebrar o módulo se nodemailer não estiver instalado
+    const { default: nodemailer } = await import('nodemailer');
+
+    const transport = nodemailer.createTransport({
+      host:   process.env.SMTP_HOST || 'smtp.hostinger.com',
+      port:   Number(process.env.SMTP_PORT) || 465,
+      secure: true, // SSL na porta 465
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
     await transport.sendMail({
       from:    `"Instituto Milhomem" <${process.env.SMTP_USER}>`,
       to:      to || process.env.SMTP_TO || process.env.SMTP_USER,
@@ -40,3 +41,4 @@ export async function sendMail({ to, subject, html, replyTo }) {
     logger.error('Erro ao enviar email:', err.message);
   }
 }
+
