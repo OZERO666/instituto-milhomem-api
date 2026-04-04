@@ -101,17 +101,13 @@ app.use(helmet({
   crossOriginOpenerPolicy:    { policy: 'same-origin' },
   crossOriginResourcePolicy:  { policy: 'cross-origin' },
   referrerPolicy:             { policy: 'strict-origin-when-cross-origin' },
-  hsts: {
+  strictTransportSecurity: {
     maxAge:            31536000,
     includeSubDomains: true,
     preload:           true,
   },
-  permittedCrossDomainPolicies: { permittedPolicies: 'none' },
-  xContentTypeOptions:    true,
-  xDnsPrefetchControl:    { allow: false },
-  xDownloadOptions:       true,
-  xFrameOptions:          { action: 'deny' },
   xPermittedCrossDomainPolicies: { permittedPolicies: 'none' },
+  xFrameOptions:         { action: 'deny' },
 }));
 
 // Bloqueia indexação por mecanismos de busca
