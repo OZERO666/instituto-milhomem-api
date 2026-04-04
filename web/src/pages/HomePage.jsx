@@ -213,7 +213,7 @@ const HomePage = () => {
         {/* ══════════════════════════════════════════════════════════════════
             HERO
         ══════════════════════════════════════════════════════════════════ */}
-        <section className="relative min-h-[100dvh] flex items-center overflow-hidden">
+        <section className="relative min-h-[100dvh] flex flex-col overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img
               src={heroConfig?.imagem_fundo?.trim() || ''}
@@ -235,7 +235,7 @@ const HomePage = () => {
             style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.15), transparent 70%)' }}
           />
 
-          <div className="container-custom relative z-10 py-12 md:py-24 mt-8 md:mt-16">
+          <div className="container-custom relative z-10 flex-1 flex flex-col justify-center pt-24 pb-10 md:pt-32 md:pb-20">
             {heroLoading ? (
               /* ── Skeleton enquanto carrega ── */
               <div className="max-w-3xl space-y-6 animate-pulse">
@@ -280,17 +280,17 @@ const HomePage = () => {
                   {heroTitle}
                 </h1>
 
-                <div className="flex items-center gap-4 mb-8 max-w-xs">
+                <div className="flex items-center gap-4 mb-4 md:mb-8 max-w-xs">
                   <div className="h-px flex-1 bg-gradient-to-r from-primary/60 to-transparent" />
                   <Gem className="w-3.5 h-3.5 text-primary/70" />
                 </div>
 
-                <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed max-w-xl font-light">
+                <p className="text-base md:text-xl text-white/80 mb-4 md:mb-10 leading-relaxed max-w-xl font-light">
                   {heroSubtitle}
                 </p>
 
                 {/* Trust badges */}
-                <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mb-10
+                <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mb-4 md:mb-10
                                 text-white/70 text-[10px] font-bold uppercase tracking-[0.15em]">
                   {[
                     { icon: Shield, label: t('hero.trust_team',    'Equipe médica especializada')  },
