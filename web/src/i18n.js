@@ -20,6 +20,7 @@ i18n
     // Idioma padrão e fallback
     fallbackLng: 'pt-BR',
     supportedLngs: ['pt-BR', 'en', 'es'],
+    nonExplicitSupportedLngs: true,
 
     // Detecção automática — tenta localStorage primeiro, depois o navegador
     detection: {
