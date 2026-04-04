@@ -1,8 +1,9 @@
 // src/App.jsx
 import React, { Suspense, lazy, useEffect } from 'react';
-import { Route, Routes, BrowserRouter as Router, Link, useLocation } from 'react-router-dom';
+import { Route, Routes, BrowserRouter as Router, Link, useLocation, Navigate } from 'react-router-dom';
 import { useContatoConfig } from '@/hooks/useContatoConfig';
 import { useTheme }         from '@/hooks/useTheme';
+import { useSiteSettings }  from '@/hooks/useSiteSettings';
 import { Toaster } from '@/components/ui/sonner.jsx';
 import { AuthProvider } from '@/contexts/AuthContext.jsx';
 import ScrollToTop from '@/components/ScrollToTop.jsx';
@@ -128,6 +129,8 @@ const NotFoundPage = ({ logoUrl }) => (
 // ─── Animated Routes ──────────────────────────────────────────────────────────
 const AnimatedRoutes = ({ siteConfig }) => {
   const location = useLocation();
+  const { settings } = useSiteSettings();
+  const blogDisabled  = settings?.blog_disabled === 'true';
 
   return (
     <AnimatePresence mode="wait">
@@ -156,11 +159,11 @@ const AnimatedRoutes = ({ siteConfig }) => {
         />
         <Route
           path="/blog"
-          element={<MainLayout siteConfig={siteConfig}><BlogPage /></MainLayout>}
+          element={blogDisabled ? <Navigate to="/" replace /> : <MainLayout siteConfig={siteConfig}><BlogPage /></MainLayout>}
         />
         <Route
           path="/blog/:slug"
-          element={<MainLayout siteConfig={siteConfig}><BlogPostPage /></MainLayout>}
+          element={blogDisabled ? <Navigate to="/" replace /> : <MainLayout siteConfig={siteConfig}><BlogPostPage /></MainLayout>}
         />
         <Route
           path="/contato"

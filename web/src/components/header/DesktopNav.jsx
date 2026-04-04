@@ -5,14 +5,19 @@ import { MessageCircle, UserCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { NAV_ITEMS } from '@/config/site';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 const DesktopNav = ({ isActive, whatsappUrl, isAuthenticated }) => {
   const { t } = useTranslation();
+  const { settings } = useSiteSettings();
+  const navItems = settings?.blog_disabled === 'true'
+    ? NAV_ITEMS.filter(item => item.key !== 'blog')
+    : NAV_ITEMS;
 
   return (
     <>
       <nav className="hidden lg:flex items-center gap-6">
-        {NAV_ITEMS.map(item => (
+        {navItems.map(item => (
           <Link
             key={item.path}
             to={item.path}

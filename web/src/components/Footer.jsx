@@ -24,6 +24,8 @@ const Footer = ({ siteConfig }) => {
   const translatedConfig = applyConfigTrad(config);
   const footerConfig = usePagesConfig('footer');
   const { settings } = useSiteSettings();
+  const blogDisabled = settings?.blog_disabled === 'true';
+  const navItems     = blogDisabled ? NAV_ITEMS.filter(item => item.key !== 'blog') : NAV_ITEMS;
   const logoUrl      = siteConfig?.logo_url || LOGO_URL;
   const logoHeight   = Number(settings?.logo_size_footer) || 48;
   const currentYear  = new Date().getFullYear();
@@ -97,7 +99,7 @@ const Footer = ({ siteConfig }) => {
             {t('footer.navigation', 'Navegação')}
           </h4>
           <ul className="flex flex-col gap-3">
-            {NAV_ITEMS.map(({ path, key }) => (
+            {navItems.map(({ path, key }) => (
               <li key={path}>
                 <Link
                   to={path}

@@ -6,9 +6,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { NAV_ITEMS } from '@/config/site';
 import { formatTelHref } from '@/hooks/useContatoConfig';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 const MobileMenu = ({ open, isActive, config, whatsappUrl }) => {
   const { t } = useTranslation();
+  const { settings } = useSiteSettings();
+  const navItems = settings?.blog_disabled === 'true'
+    ? NAV_ITEMS.filter(item => item.key !== 'blog')
+    : NAV_ITEMS;
 
   return (
     <AnimatePresence>
@@ -22,7 +27,7 @@ const MobileMenu = ({ open, isActive, config, whatsappUrl }) => {
         >
           <div className="container-custom py-6 flex flex-col gap-1">
 
-            {NAV_ITEMS.map(item => (
+            {navItems.map(item => (
               <Link
                 key={item.path}
                 to={item.path}

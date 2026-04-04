@@ -1,6 +1,6 @@
 // src/features/admin/tabs/SettingsTab.jsx
 import React from 'react';
-import { CheckCircle2, AlertCircle, Loader2, Palette, Type, ImageIcon, Search } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Loader2, Palette, Type, ImageIcon, Search, LayoutList } from 'lucide-react';
 import { Button }   from '@/components/ui/button.jsx';
 import { Input }    from '@/components/ui/input.jsx';
 import { Label }    from '@/components/ui/label.jsx';
@@ -83,7 +83,8 @@ const SaveStatus = ({ status }) => {
 // ─── Tab principal ────────────────────────────────────────────────────────────
 const SettingsTab = ({ settingsForm, saveStatus, onSettingsSubmit }) => {
   const { register, handleSubmit, watch, setValue, formState: { isDirty } } = settingsForm;
-  const robotsNoindex = watch('robots_noindex');
+  const robotsNoindex  = watch('robots_noindex');
+  const blogDisabled   = watch('blog_disabled');
 
   return (
     <div className="space-y-6">
@@ -315,6 +316,45 @@ const SettingsTab = ({ settingsForm, saveStatus, onSettingsSubmit }) => {
                   checked={robotsNoindex === 'true'}
                   onCheckedChange={(checked) =>
                     setValue('robots_noindex', checked ? 'true' : 'false', { shouldDirty: true })
+                  }
+                />
+              </div>
+            </div>
+
+            {/* ── Conteúdo ──────────────────────────────────────────────── */}
+            <div className="border-t border-border pt-6 space-y-4">
+              <div className="flex items-center gap-2 mb-1">
+                <LayoutList className="w-4 h-4 text-primary" />
+                <h3 className="text-sm font-bold uppercase tracking-wider text-secondary">
+                  Conteúdo
+                </h3>
+              </div>
+
+              <div className="flex items-start justify-between gap-6 rounded-xl border border-border p-5">
+                <div className="space-y-1 flex-1">
+                  <Label className="text-sm font-semibold">
+                    Desativar Blog
+                  </Label>
+                  <p className="text-[12px] text-muted-foreground">
+                    Quando ativado, o link "Blog" some do menu e os endereços{' '}
+                    <code className="bg-muted px-1 rounded text-[11px]">/blog</code> e{' '}
+                    <code className="bg-muted px-1 rounded text-[11px]">/blog/:artigo</code>{' '}
+                    redirecionam para a página inicial. Útil enquanto não houver conteúdo publicado.
+                  </p>
+                  {blogDisabled === 'true' ? (
+                    <p className="text-[12px] font-semibold text-amber-600 mt-2">
+                      Blog desativado — link oculto no menu.
+                    </p>
+                  ) : (
+                    <p className="text-[12px] font-semibold text-green-600 mt-2">
+                      ✓ Blog ativo e visível no menu.
+                    </p>
+                  )}
+                </div>
+                <Switch
+                  checked={blogDisabled === 'true'}
+                  onCheckedChange={(checked) =>
+                    setValue('blog_disabled', checked ? 'true' : 'false', { shouldDirty: true })
                   }
                 />
               </div>
