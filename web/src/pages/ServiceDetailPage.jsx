@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, CheckCircle2, ChevronDown } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { WhatsappLogo } from '@phosphor-icons/react/dist/csr/WhatsappLogo';
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
@@ -11,33 +11,6 @@ import WhatsAppButton from '@/components/WhatsAppButton.jsx';
 import api from '@/lib/apiServerClient';
 import { usePagesConfig } from '@/hooks/usePagesConfig';
 import { useTraducoes } from '@/hooks/useTraducoes';
-
-const FaqAccordion = ({ items }) => {
-  const [openIndex, setOpenIndex] = useState(null);
-  return (
-    <div className="space-y-3">
-      {items.map((item, i) => (
-        <div key={i} className="bg-card border border-border/60 rounded-xl overflow-hidden">
-          <button
-            className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left hover:bg-muted/50 transition-colors"
-            onClick={() => setOpenIndex(openIndex === i ? null : i)}
-            aria-expanded={openIndex === i}
-          >
-            <span className="font-bold text-foreground text-sm">{item.pergunta}</span>
-            <ChevronDown
-              className={`w-4 h-4 text-primary flex-shrink-0 transition-transform duration-200 ${openIndex === i ? 'rotate-180' : ''}`}
-            />
-          </button>
-          {openIndex === i && (
-            <div className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border/40 pt-4">
-              {item.resposta}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-};
 
 const ServiceDetailPage = () => {
   const pageConfig = usePagesConfig('service_detail');
@@ -89,14 +62,6 @@ const ServiceDetailPage = () => {
     return displayService.beneficios.split(sep).map(b => b.trim()).filter(Boolean);
   }, [displayService]);
 
-  const faqItems = useMemo(() => {
-    if (!service?.faq) return [];
-    try {
-      const parsed = JSON.parse(service.faq);
-      return Array.isArray(parsed) ? parsed.filter(f => f.pergunta && f.resposta) : [];
-    } catch { return []; }
-  }, [service]);
-
   const whatsappUrl = useMemo(() => {
     const num = contact?.whatsapp ?? '62981070937';
     const msg = contact?.mensagem_whatsapp
@@ -146,7 +111,6 @@ const ServiceDetailPage = () => {
           slug:      service.slug,
           beneficios: benefitsList,
         }}
-        faqData={faqItems.map(f => ({ question: f.pergunta, answer: f.resposta }))}
       />
       <WhatsAppButton />
 
@@ -297,19 +261,6 @@ const ServiceDetailPage = () => {
             </div>
           </div>
         </section>
-
-        {/* ── FAQ ── */}
-        {faqItems.length > 0 && (
-          <section className="section-padding bg-muted border-t border-border/40">
-            <div className="container-custom max-w-3xl">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-8 h-px bg-primary" />
-                <h2 className="text-xl font-bold text-foreground uppercase tracking-wider">Perguntas Frequentes</h2>
-              </div>
-              <FaqAccordion items={faqItems} />
-            </div>
-          </section>
-        )}
 
         {/* ── SERVIÇOS RELACIONADOS ── */}
         {related.length > 0 && (

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Edit, Trash2, Upload, Loader2, ChevronUp, ChevronDown, Search, ChevronDown as CaretDown, Plus, X, HelpCircle } from 'lucide-react';
+import { Edit, Trash2, Upload, Loader2, ChevronUp, ChevronDown, Search, ChevronDown as CaretDown } from 'lucide-react';
 import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Textarea } from '@/components/ui/textarea.jsx';
@@ -85,69 +85,6 @@ function IconPicker({ value, onChange }) {
 const FieldError = ({ error }) =>
   error ? <p className="text-xs text-destructive mt-1">{error.message || 'Campo obrigatório'}</p> : null;
 
-// ─── FAQ editor ─────────────────────────────────────────────────────────────
-const FaqEditor = ({ watch, setValue }) => {
-  let items = [];
-  try { const raw = watch('faq'); items = raw ? JSON.parse(raw) : []; } catch { items = []; }
-  if (!Array.isArray(items)) items = [];
-
-  const update = (next) => setValue('faq', JSON.stringify(next), { shouldDirty: true });
-  const add    = () => update([...items, { pergunta: '', resposta: '' }]);
-  const remove = (i) => update(items.filter((_, idx) => idx !== i));
-  const change = (i, field, val) => {
-    const next = items.map((item, idx) => idx === i ? { ...item, [field]: val } : item);
-    update(next);
-  };
-
-  return (
-    <div className="space-y-3 border-t border-border pt-5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <HelpCircle className="w-4 h-4 text-primary" />
-          <Label className="font-bold">Perguntas Frequentes (FAQ)</Label>
-        </div>
-        <Button type="button" size="sm" variant="outline" onClick={add} className="h-7 text-xs gap-1">
-          <Plus className="w-3 h-3" /> Adicionar
-        </Button>
-      </div>
-      <p className="text-[11px] text-muted-foreground -mt-1">
-        Gera o schema FAQPage no Google (FAQ snippets nos resultados de busca).
-      </p>
-      {items.length === 0 && (
-        <p className="text-xs text-muted-foreground italic">Nenhuma pergunta cadastrada.</p>
-      )}
-      {items.map((item, i) => (
-        <div key={i} className="border border-border rounded-lg p-3 space-y-2 bg-muted/30">
-          <div className="flex items-start gap-2">
-            <div className="flex-1 space-y-2">
-              <Input
-                value={item.pergunta}
-                onChange={e => change(i, 'pergunta', e.target.value)}
-                placeholder={`Pergunta ${i + 1}`}
-                className="text-sm"
-              />
-              <Textarea
-                value={item.resposta}
-                onChange={e => change(i, 'resposta', e.target.value)}
-                placeholder="Resposta"
-                rows={2}
-                className="text-sm resize-none"
-              />
-            </div>
-            <Button
-              type="button" size="icon" variant="ghost"
-              className="text-destructive hover:text-destructive h-7 w-7 mt-0.5 shrink-0"
-              onClick={() => remove(i)}
-            >
-              <X className="w-3.5 h-3.5" />
-            </Button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
 const ServicosTab = ({ services, isLoading, serviceForm, editingItem, setEditingItem, onGenericSubmit, onDelete, onReorder }) => {
   const { register, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting } } = serviceForm;
   const imagemPreview = useFilePreview(watch('imagem'));
@@ -211,7 +148,6 @@ const ServicosTab = ({ services, isLoading, serviceForm, editingItem, setEditing
               <Input type="file" accept="image/*" className="bg-white" {...register('imagem')} />
               {!imagemPreview && editingItem?.imagem && <p className="text-[10px] text-muted-foreground mt-1">Deixe vazio para manter a imagem atual</p>}
             </div>
-            <FaqEditor watch={watch} setValue={setValue} />
 
             <div className="flex gap-3 pt-2">
               <Button type="submit" disabled={isSubmitting} className="flex-1 bg-primary text-primary-foreground hover:bg-secondary hover:text-white font-bold uppercase tracking-wide">

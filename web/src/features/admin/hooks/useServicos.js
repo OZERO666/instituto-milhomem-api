@@ -10,7 +10,7 @@ export function useServicos(currentUser) {
   const [editingItem, setEditingItem] = useState(null);
   const [isLoading,   setIsLoading]   = useState(false);
 
-  const serviceForm = useForm({ mode: 'onBlur', defaultValues: { nome: '', slug: '', descricao: '', beneficios: '', icon: '', ordem: '', imagem: '', faq: '' } });
+  const serviceForm = useForm({ mode: 'onBlur', defaultValues: { nome: '', slug: '', descricao: '', beneficios: '', icon: '', ordem: '', imagem: '' } });
 
   const fetchServicos = useCallback(async () => {
     setIsLoading(true);

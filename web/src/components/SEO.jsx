@@ -24,7 +24,7 @@ const DEFAULTS = {
   canonical:        'https://institutomilhomem.com',
 };
 
-const SEO = ({ title, description, keywords, ogImage, url, type = 'website', publishedTime, modifiedTime, author, section, articleTags = [], serviceData = null, faqData = null }) => {
+const SEO = ({ title, description, keywords, ogImage, url, type = 'website', publishedTime, modifiedTime, author, section, articleTags = [], serviceData = null }) => {
   const location      = useLocation();
   const [seo, setSeo] = useState(null);
   const { settings }  = useSiteSettings();
@@ -153,19 +153,6 @@ const SEO = ({ title, description, keywords, ogImage, url, type = 'website', pub
 
   const structuredData = isArticle ? articleSchema : isService && serviceSchema ? serviceSchema : clinicSchema;
 
-  const faqSchema = Array.isArray(faqData) && faqData.length > 0 ? {
-    '@context':   'https://schema.org',
-    '@type':      'FAQPage',
-    mainEntity:   faqData.map(({ question, answer }) => ({
-      '@type': 'Question',
-      name:    question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text:    answer,
-      },
-    })),
-  } : null;
-
   return (
     <Helmet>
       <title>{t}</title>
@@ -215,12 +202,6 @@ const SEO = ({ title, description, keywords, ogImage, url, type = 'website', pub
       <script type="application/ld+json">
         {JSON.stringify(structuredData)}
       </script>
-
-      {faqSchema && (
-        <script type="application/ld+json">
-          {JSON.stringify(faqSchema)}
-        </script>
-      )}
     </Helmet>
   );
 };
