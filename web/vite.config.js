@@ -328,7 +328,7 @@ export default defineConfig({
 						'@radix-ui/react-progress', '@radix-ui/react-slider',
 					],
 					'vendor-form':   ['react-hook-form', '@hookform/resolvers'],
-					'vendor-icons':  ['lucide-react', '@phosphor-icons/react'],
+					'vendor-icons':  ['lucide-react'],
 					'vendor-editor': ['react-quill'],
 					'vendor-misc':   ['date-fns', 'clsx', 'tailwind-merge', 'class-variance-authority', 'sonner', 'next-themes'],
 				}
