@@ -1,0 +1,1 @@
+const t=r=>{if(Array.isArray(r))return r;if(typeof r=="string")try{const s=JSON.parse(r);return Array.isArray(s)?s:[]}catch{return[]}return[]},n=(r={})=>({...r,doctor_credentials:t(r.doctor_credentials),values:t(r.values),team:t(r.team)});export{n,t as p};

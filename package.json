@@ -7,7 +7,7 @@
 		"dev": "nodemon src/main.js",
 		"start": "node src/main.js",
 		"lint": "eslint . --quiet",
-		"build:web": "cd web && npm ci && npm run build",
+		"build:web": "cd web && npm install && npm run build",
 		"build": "npm run build:web"
 	},
 	"dependencies": {
