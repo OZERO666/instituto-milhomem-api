@@ -44,14 +44,14 @@ const fadeUp = (delay = 0) => ({
   transition:  { duration: 0.6, ease: 'easeOut', delay },
 });
 const fadeLeft = (delay = 0) => ({
-  initial:     { opacity: 0, x: -30 },
-  whileInView: { opacity: 1, x: 0   },
-  viewport:    { once: true         },
+  initial:     { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0  },
+  viewport:    { once: true        },
   transition:  { duration: 0.6, ease: 'easeOut', delay },
 });
 const fadeRight = (delay = 0) => ({
-  initial:     { opacity: 0, x: 30 },
-  whileInView: { opacity: 1, x: 0  },
+  initial:     { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0  },
   viewport:    { once: true        },
   transition:  { duration: 0.6, ease: 'easeOut', delay },
 });
@@ -204,7 +204,7 @@ const HomePage = () => {
   const heroCtaLink    = heroConfig?.cta_link?.trim() || whatsappUrl;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
       <SEO />
       <WhatsAppButton />
 
@@ -275,8 +275,8 @@ const HomePage = () => {
                 </motion.div>
 
                 {/* Título */}
-                <h1 className="text-[clamp(1.25rem,6vw,4.5rem)] font-extrabold text-white
-                               mb-3 md:mb-5 leading-tight tracking-tight uppercase break-words w-full">
+                <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-[4.5rem] font-extrabold text-white
+                               mb-3 md:mb-5 leading-tight tracking-tight uppercase">
                   {heroTitle}
                 </h1>
 
