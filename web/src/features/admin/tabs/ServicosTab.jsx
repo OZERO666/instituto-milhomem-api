@@ -1,10 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
   Edit, Trash2, Upload, Loader2, ChevronUp, ChevronDown, Search, ChevronDown as CaretDown,
-  Award, Shield, Heart, Sparkles, Star, Zap, Target, Users, Clock,
-  Leaf, Gem, TrendingUp, BadgeCheck, Stethoscope, Eye, Brain, Smile,
-  Globe, Handshake, Lightbulb, Lock, Medal, Microscope, Ribbon, Sun,
-  ThumbsUp, Trophy, Verified, Wallet, Wind,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
@@ -14,6 +10,7 @@ import { Badge } from '@/components/ui/badge.jsx';
 import TabLoader from '@/features/admin/components/TabLoader.jsx';
 import MediaSelectorField from '@/features/admin/components/MediaSelectorField.jsx';
 import TranslationFields from '@/features/admin/components/TranslationFields.jsx';
+import PhosphorIcon from '@/components/PhosphorIcon.jsx';
 import {
   HairTransplantIcon, HairFUEIcon, HairDHIIcon, BeardTransplantIcon,
   EyebrowTransplantIcon, SkinCleansingIcon, PeelingLaserIcon, SkinHydrationIcon,
@@ -22,7 +19,19 @@ import {
   ScalpAnalysisIcon, PrecisionImplantIcon, PostOpCareIcon,
 } from '@/components/icons/AestheticIcons.jsx';
 
-const ICON_OPTIONS = [
+const phosphorIconModules = import.meta.glob('/node_modules/@phosphor-icons/react/dist/csr/*.es.js');
+const PHOSPHOR_ICON_KEYS = Object.keys(phosphorIconModules)
+  .map((path) => path.split('/').pop()?.replace('.es.js', ''))
+  .filter(Boolean)
+  .filter((name) => name !== 'IconBase')
+  .sort((a, b) => a.localeCompare(b));
+
+const formatIconLabel = (key) => key
+  .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+  .replace(/\s+/g, ' ')
+  .trim();
+
+const CUSTOM_ICON_OPTIONS = [
   { key: 'HairTransplantIcon',    label: 'Transplante Capilar',     Component: HairTransplantIcon },
   { key: 'HairFUEIcon',           label: 'Técnica FUE',             Component: HairFUEIcon },
   { key: 'HairDHIIcon',           label: 'Técnica DHI (caneta)',     Component: HairDHIIcon },
@@ -41,44 +50,37 @@ const ICON_OPTIONS = [
   { key: 'ScalpAnalysisIcon',     label: 'Análise do Couro Cabeludo', Component: ScalpAnalysisIcon },
   { key: 'PrecisionImplantIcon',  label: 'Precisão de Implantação', Component: PrecisionImplantIcon },
   { key: 'PostOpCareIcon',        label: 'Pós-operatório Capilar',  Component: PostOpCareIcon },
-  { key: 'Award',                 label: 'Excelência',              Component: Award },
-  { key: 'Shield',                label: 'Segurança',               Component: Shield },
-  { key: 'Heart',                 label: 'Cuidado',                 Component: Heart },
-  { key: 'Sparkles',              label: 'Estética Premium',        Component: Sparkles },
-  { key: 'Star',                  label: 'Qualidade',               Component: Star },
-  { key: 'Zap',                   label: 'Tecnologia',              Component: Zap },
-  { key: 'Target',                label: 'Precisão',                Component: Target },
-  { key: 'Users',                 label: 'Equipe',                  Component: Users },
-  { key: 'Clock',                 label: 'Agilidade',               Component: Clock },
-  { key: 'Leaf',                  label: 'Recuperação',             Component: Leaf },
-  { key: 'Gem',                   label: 'Padrão Premium',          Component: Gem },
-  { key: 'TrendingUp',            label: 'Evolução',                Component: TrendingUp },
-  { key: 'BadgeCheck',            label: 'Certificado',             Component: BadgeCheck },
-  { key: 'Stethoscope',           label: 'Avaliação Médica',        Component: Stethoscope },
-  { key: 'Eye',                   label: 'Análise Visual',          Component: Eye },
-  { key: 'Brain',                 label: 'Planejamento',            Component: Brain },
-  { key: 'Smile',                 label: 'Satisfação',              Component: Smile },
-  { key: 'Globe',                 label: 'Padrão Internacional',    Component: Globe },
-  { key: 'Handshake',             label: 'Confiança',               Component: Handshake },
-  { key: 'Lightbulb',             label: 'Inovação',                Component: Lightbulb },
-  { key: 'Lock',                  label: 'Privacidade',             Component: Lock },
-  { key: 'Medal',                 label: 'Destaque',                Component: Medal },
-  { key: 'Microscope',            label: 'Microscopia',             Component: Microscope },
-  { key: 'Ribbon',                label: 'Reconhecimento',          Component: Ribbon },
-  { key: 'Sun',                   label: 'Bem-estar',               Component: Sun },
-  { key: 'ThumbsUp',              label: 'Aprovação',               Component: ThumbsUp },
-  { key: 'Trophy',                label: 'Referência',              Component: Trophy },
-  { key: 'Verified',              label: 'Verificado',              Component: Verified },
-  { key: 'Wallet',                label: 'Custo-benefício',         Component: Wallet },
-  { key: 'Wind',                  label: 'Leveza',                  Component: Wind },
 ];
+
+const PHOSPHOR_ICON_OPTIONS = PHOSPHOR_ICON_KEYS.map((key) => ({
+  key,
+  label: `Phosphor: ${formatIconLabel(key)}`,
+  Component: ({ className }) => <PhosphorIcon name={key} size={28} className={className} />,
+}));
+
+const ICON_OPTIONS = [...CUSTOM_ICON_OPTIONS, ...PHOSPHOR_ICON_OPTIONS];
 
 export const ICON_MAP = Object.fromEntries(ICON_OPTIONS.map(o => [o.key, o.Component]));
 
 function IconPicker({ value, onChange }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
   const selected = ICON_OPTIONS.find(o => o.key === value);
   const SelectedIcon = selected?.Component;
+  const matchingOptions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return ICON_OPTIONS;
+    return ICON_OPTIONS.filter(o =>
+      o.label.toLowerCase().includes(q) ||
+      o.key.toLowerCase().includes(q)
+    );
+  }, [query]);
+  const filteredOptions = useMemo(() => {
+    if (query.trim()) return matchingOptions;
+    // Sem filtro, mostra todos os customizados + um lote inicial de Phosphor.
+    return [...CUSTOM_ICON_OPTIONS, ...PHOSPHOR_ICON_OPTIONS.slice(0, 120)];
+  }, [query, matchingOptions]);
+
   return (
     <div className="relative">
       <button
@@ -94,12 +96,28 @@ function IconPicker({ value, onChange }) {
       </button>
 
       {open && (
-        <div className="absolute z-50 top-full mt-1 w-full bg-white border border-border rounded-xl shadow-xl p-3">
-          <div className="grid grid-cols-3 gap-2 max-h-72 overflow-y-auto pr-1">
+        <div className="absolute z-50 top-full mt-1 w-full bg-white border border-border rounded-xl shadow-xl p-3 space-y-2">
+          <div className="space-y-1">
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar ícone (ex: scissor, heart, user)..."
+              className="h-8 text-xs"
+            />
+            <p className="text-[10px] text-muted-foreground">
+              Mostrando {filteredOptions.length} de {ICON_OPTIONS.length} ícones
+            </p>
+            {!query.trim() && (
+              <p className="text-[10px] text-muted-foreground">
+                Dica: digite para pesquisar entre todos os ícones Phosphor.
+              </p>
+            )}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-72 overflow-y-auto pr-1">
             {/* Opção "nenhum" */}
             <button
               type="button"
-              onClick={() => { onChange(''); setOpen(false); }}
+              onClick={() => { onChange(''); setOpen(false); setQuery(''); }}
               className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border text-xs transition-colors
                 ${!value ? 'border-primary bg-primary/10 text-primary' : 'border-transparent hover:border-border hover:bg-muted/50 text-muted-foreground'}`}
             >
@@ -107,11 +125,11 @@ function IconPicker({ value, onChange }) {
               <span>Nenhum</span>
             </button>
 
-            {ICON_OPTIONS.map(({ key, label, Component }) => (
+            {filteredOptions.map(({ key, label, Component }) => (
               <button
                 key={key}
                 type="button"
-                onClick={() => { onChange(key); setOpen(false); }}
+                onClick={() => { onChange(key); setOpen(false); setQuery(''); }}
                 className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border text-xs transition-colors
                   ${value === key ? 'border-primary bg-primary/10 text-primary' : 'border-transparent hover:border-border hover:bg-muted/50 text-secondary'}`}
               >
@@ -170,7 +188,7 @@ const ServicosTab = ({ services, isLoading, serviceForm, editingItem, setEditing
               <Textarea {...register('beneficios')} rows={3} className="mt-2 resize-none focus-visible:ring-primary" />
             </div>
             <div>
-              <Label className="font-bold">Ícone do Serviço</Label>
+              <Label className="font-bold">Ícone do Serviço ({ICON_OPTIONS.length} opções totais)</Label>
               <div className="mt-2">
                 <IconPicker value={watch('icon')} onChange={val => setValue('icon', val, { shouldDirty: true })} />
               </div>
