@@ -208,6 +208,11 @@
     "conversion": {
       "title": "Conversão por Origem",
       "leads": "leads",
+      "period_label": "Período",
+      "period_7d": "Últimos 7 dias",
+      "period_30d": "Últimos 30 dias",
+      "period_90d": "Últimos 90 dias",
+      "period_all": "Todo período",
       "top_sources": "Top Origens",
       "top_ctas": "Top CTAs",
       "top_campaigns": "Top Campanhas UTM",

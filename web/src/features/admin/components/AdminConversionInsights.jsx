@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { BarChart3, Target } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge.jsx';
@@ -22,15 +22,52 @@ function buildTopEntries(bookings, fieldName) {
 
 export default function AdminConversionInsights({ bookings = [] }) {
   const { t } = useTranslation();
-  const sourceStats = useMemo(() => buildTopEntries(bookings, 'origem'), [bookings]);
-  const ctaStats = useMemo(() => buildTopEntries(bookings, 'cta_origem'), [bookings]);
-  const campaignStats = useMemo(() => buildTopEntries(bookings, 'utm_campaign'), [bookings]);
+  const [period, setPeriod] = useState('30d');
+
+  const filteredBookings = useMemo(() => {
+    if (period === 'all') return bookings;
+
+    const days = Number(period.replace('d', ''));
+    if (!Number.isFinite(days)) return bookings;
+
+    const threshold = Date.now() - days * 24 * 60 * 60 * 1000;
+    return bookings.filter((booking) => {
+      const rawDate = booking?.created || booking?.created_at;
+      if (!rawDate) return false;
+      const parsed = new Date(rawDate);
+      if (Number.isNaN(parsed.getTime())) return false;
+      return parsed.getTime() >= threshold;
+    });
+  }, [bookings, period]);
+
+  const sourceStats = useMemo(() => buildTopEntries(filteredBookings, 'origem'), [filteredBookings]);
+  const ctaStats = useMemo(() => buildTopEntries(filteredBookings, 'cta_origem'), [filteredBookings]);
+  const campaignStats = useMemo(() => buildTopEntries(filteredBookings, 'utm_campaign'), [filteredBookings]);
+
+  const periodOptions = [
+    { value: '7d', label: t('admin.conversion.period_7d') },
+    { value: '30d', label: t('admin.conversion.period_30d') },
+    { value: '90d', label: t('admin.conversion.period_90d') },
+    { value: 'all', label: t('admin.conversion.period_all') },
+  ];
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-border p-6 space-y-5">
       <div className="flex items-center justify-between">
         <h3 className="font-bold text-lg text-secondary border-b pb-2">{t('admin.conversion.title')}</h3>
-        <Badge variant="outline" className="gap-1"><BarChart3 className="w-3.5 h-3.5" /> {bookings.length} {t('admin.conversion.leads')}</Badge>
+        <div className="flex items-center gap-2">
+          <select
+            value={period}
+            onChange={(event) => setPeriod(event.target.value)}
+            aria-label={t('admin.conversion.period_label')}
+            className="px-2.5 py-1.5 text-xs border border-border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-primary/40"
+          >
+            {periodOptions.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+          <Badge variant="outline" className="gap-1"><BarChart3 className="w-3.5 h-3.5" /> {filteredBookings.length} {t('admin.conversion.leads')}</Badge>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
