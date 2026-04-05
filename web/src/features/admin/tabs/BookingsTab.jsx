@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { Search, Trash2 } from 'lucide-react';
+import { Download, Search, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button.jsx';
 import { Badge } from '@/components/ui/badge.jsx';
@@ -72,6 +72,69 @@ const BookingsTab = ({ bookings, isLoading, onMarkAsRead, onDelete }) => {
     });
   }, [bookings, ctaFilter, periodFilter, query, sourceFilter]);
 
+  const exportCsv = () => {
+    if (filteredBookings.length === 0) return;
+
+    const escapeCsv = (value) => {
+      if (value === null || value === undefined) return '';
+      const text = String(value).replace(/\r?\n|\r/g, ' ').trim();
+      return `"${text.replace(/"/g, '""')}"`;
+    };
+
+    const headers = [
+      'nome',
+      'email',
+      'telefone',
+      'tipo_servico',
+      'mensagem',
+      'origem',
+      'cta_origem',
+      'utm_source',
+      'utm_medium',
+      'utm_campaign',
+      'utm_content',
+      'utm_term',
+      'landing_page',
+      'referrer_url',
+      'status',
+      'created',
+    ];
+
+    const rows = filteredBookings.map((booking) => {
+      const created = booking?.created || booking?.created_at || '';
+      return [
+        booking.nome,
+        booking.email,
+        booking.telefone,
+        booking.tipo_servico,
+        booking.mensagem,
+        booking.origem,
+        booking.cta_origem,
+        booking.utm_source,
+        booking.utm_medium,
+        booking.utm_campaign,
+        booking.utm_content,
+        booking.utm_term,
+        booking.landing_page,
+        booking.referrer_url,
+        booking.lido ? 'read' : 'new',
+        created,
+      ].map(escapeCsv).join(',');
+    });
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const stamp = format(new Date(), 'yyyyMMdd-HHmm');
+    link.href = url;
+    link.setAttribute('download', `${t('admin.bookings.export_filename_prefix')}-${stamp}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-border p-6">
       <h2 className="text-2xl font-bold mb-6 text-secondary border-b pb-4">{t('admin.bookings.title')}</h2>
@@ -121,6 +184,19 @@ const BookingsTab = ({ bookings, isLoading, onMarkAsRead, onDelete }) => {
             <option key={option} value={option}>{toDisplayValue(option, t)}</option>
           ))}
         </select>
+      </div>
+
+      <div className="flex justify-end mb-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={exportCsv}
+          disabled={filteredBookings.length === 0}
+          className="gap-2"
+        >
+          <Download className="w-4 h-4" />
+          {t('admin.bookings.export_csv')}
+        </Button>
       </div>
 
       {isLoading ? (

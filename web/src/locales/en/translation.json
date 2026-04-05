@@ -200,6 +200,8 @@
       "period_30d": "Last 30 days",
       "period_90d": "Last 90 days",
       "period_all": "All time",
+      "export_csv": "Export CSV",
+      "export_filename_prefix": "leads",
       "all_sources": "All sources",
       "all_ctas": "All CTAs",
       "empty_filtered": "No leads found for the current filters.",
