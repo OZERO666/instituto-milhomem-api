@@ -75,10 +75,10 @@ export default function MediaLibraryTab() {
     setSelectedAsset(asset);
   };
 
-  const handleDeleteFromSheet = async () => {
-    if (!selectedAsset) return;
-    await deleteAsset(selectedAsset.public_id);
-    setSelectedAsset(null);
+  const handleConfirmDelete = async () => {
+    if (!confirmDelete) return;
+    await deleteAsset(confirmDelete.public_id);
+    if (selectedAsset?.public_id === confirmDelete.public_id) setSelectedAsset(null);
     setConfirmDelete(null);
   };
 
@@ -267,7 +267,7 @@ export default function MediaLibraryTab() {
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={isDeleting}
-              onClick={handleDeleteFromSheet}
+              onClick={handleConfirmDelete}
             >
               {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
               Deletar
