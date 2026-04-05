@@ -271,7 +271,9 @@ const HomePage = () => {
         ══════════════════════════════════════════════════════════════════ */}
         <section
           className="relative flex flex-col overflow-hidden"
-          style={{ minHeight: 'calc(100dvh - var(--header-h, 88px))' }}
+          style={{
+            height: 'clamp(560px, calc(100dvh - var(--header-h, 88px)), 980px)',
+          }}
         >
           <div className="absolute inset-0 z-0">
             <img
@@ -294,7 +296,7 @@ const HomePage = () => {
             style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.15), transparent 70%)' }}
           />
 
-          <div className="container-custom relative z-10 flex-1 flex flex-col justify-center py-10 md:py-24">
+          <div className="container-custom relative z-10 h-full flex flex-col justify-center py-8 md:py-16 lg:py-20 overflow-y-auto">
             {heroLoading ? (
               /* ── Skeleton enquanto carrega ── */
               <div className="max-w-3xl space-y-6 animate-pulse">
