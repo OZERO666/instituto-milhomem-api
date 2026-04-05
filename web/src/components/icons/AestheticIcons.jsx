@@ -141,6 +141,78 @@ export const NaturalResultIcon = svg48(
   </>
 );
 
+/* ── 13. Desenho de Linha Frontal ───────────────────────────────────────── */
+export const HairlineDesignIcon = svg48(
+  <>
+    <circle cx="24" cy="24" r="16" fill="#F1F5F9" stroke="#1E40AF" strokeWidth="2"/>
+    <path d="M14 22C17 16 21 14 24 14C27 14 31 16 34 22" stroke="#1E40AF" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M17 27C19 24 21 23 24 23C27 23 29 24 31 27" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="24" cy="30" r="1.8" fill="#1E40AF"/>
+  </>
+);
+
+/* ── 14. Saúde Folicular ─────────────────────────────────────────────────── */
+export const FollicleHealthIcon = svg48(
+  <>
+    <circle cx="24" cy="24" r="16" fill="#F1F5F9" stroke="#1E40AF" strokeWidth="2"/>
+    <circle cx="20" cy="21" r="2" fill="#1E40AF"/>
+    <circle cx="28" cy="21" r="2" fill="#1E40AF"/>
+    <circle cx="24" cy="28" r="2" fill="#1E40AF"/>
+    <path d="M20 17L20 13" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M28 17L28 13" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M24 24L24 20" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"/>
+  </>
+);
+
+/* ── 15. Densidade de Enxertos ───────────────────────────────────────────── */
+export const GraftDensityIcon = svg48(
+  <>
+    <rect x="10" y="10" width="28" height="28" rx="8" fill="#F1F5F9" stroke="#1E40AF" strokeWidth="2"/>
+    <circle cx="18" cy="18" r="1.5" fill="#1E40AF"/>
+    <circle cx="24" cy="18" r="1.5" fill="#1E40AF"/>
+    <circle cx="30" cy="18" r="1.5" fill="#1E40AF"/>
+    <circle cx="18" cy="24" r="1.5" fill="#1E40AF"/>
+    <circle cx="24" cy="24" r="1.5" fill="#16A34A"/>
+    <circle cx="30" cy="24" r="1.5" fill="#1E40AF"/>
+    <circle cx="18" cy="30" r="1.5" fill="#1E40AF"/>
+    <circle cx="24" cy="30" r="1.5" fill="#1E40AF"/>
+    <circle cx="30" cy="30" r="1.5" fill="#1E40AF"/>
+  </>
+);
+
+/* ── 16. Analise de Couro Cabeludo ───────────────────────────────────────── */
+export const ScalpAnalysisIcon = svg48(
+  <>
+    <circle cx="22" cy="22" r="13" fill="#F1F5F9" stroke="#1E40AF" strokeWidth="2"/>
+    <path d="M16 21C17.5 18 19.5 17 22 17C24.5 17 26.5 18 28 21" stroke="#1E40AF" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M18 26C19.2 24.5 20.5 24 22 24C23.5 24 24.8 24.5 26 26" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="33.5" cy="33.5" r="4.5" stroke="#0EA5E9" strokeWidth="2"/>
+    <path d="M36.8 36.8L40 40" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"/>
+  </>
+);
+
+/* ── 17. Precisao de Implantacao ─────────────────────────────────────────── */
+export const PrecisionImplantIcon = svg48(
+  <>
+    <circle cx="24" cy="24" r="16" fill="#F1F5F9" stroke="#1E40AF" strokeWidth="2"/>
+    <circle cx="24" cy="24" r="6" stroke="#0EA5E9" strokeWidth="2"/>
+    <circle cx="24" cy="24" r="1.8" fill="#1E40AF"/>
+    <path d="M24 10V15" stroke="#1E40AF" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M24 33V38" stroke="#1E40AF" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M10 24H15" stroke="#1E40AF" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M33 24H38" stroke="#1E40AF" strokeWidth="2" strokeLinecap="round"/>
+  </>
+);
+
+/* ── 18. Pos-operatorio Capilar ──────────────────────────────────────────── */
+export const PostOpCareIcon = svg48(
+  <>
+    <path d="M24 8C16 8 8 16 8 26C8 36 16 44 24 44C32 44 40 36 40 26C40 16 32 8 24 8Z" fill="#F1F5F9" stroke="#1E40AF" strokeWidth="2"/>
+    <path d="M18 24L22 28L30 20" stroke="#16A34A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M17 18C19 15.5 21.5 14 24 14C26.5 14 29 15.5 31 18" stroke="#1E40AF" strokeWidth="2" strokeLinecap="round"/>
+  </>
+);
+
 /* ── Exporte agrupado ────────────────────────────────────────────────────── */
 export const aestheticIcons = {
   HairTransplantIcon,
@@ -155,6 +227,12 @@ export const aestheticIcons = {
   BeforeAfterIcon,
   MedicalConsultIcon,
   NaturalResultIcon,
+  HairlineDesignIcon,
+  FollicleHealthIcon,
+  GraftDensityIcon,
+  ScalpAnalysisIcon,
+  PrecisionImplantIcon,
+  PostOpCareIcon,
 };
 
 export default aestheticIcons;

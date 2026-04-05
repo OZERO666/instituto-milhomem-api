@@ -1,5 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Edit, Trash2, Upload, Loader2, ChevronUp, ChevronDown, Search, ChevronDown as CaretDown } from 'lucide-react';
+import {
+  Edit, Trash2, Upload, Loader2, ChevronUp, ChevronDown, Search, ChevronDown as CaretDown,
+  Award, Shield, Heart, Sparkles, Star, Zap, Target, Users, Clock,
+  Leaf, Gem, TrendingUp, BadgeCheck, Stethoscope, Eye, Brain, Smile,
+  Globe, Handshake, Lightbulb, Lock, Medal, Microscope, Ribbon, Sun,
+  ThumbsUp, Trophy, Verified, Wallet, Wind,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Textarea } from '@/components/ui/textarea.jsx';
@@ -12,6 +18,8 @@ import {
   HairTransplantIcon, HairFUEIcon, HairDHIIcon, BeardTransplantIcon,
   EyebrowTransplantIcon, SkinCleansingIcon, PeelingLaserIcon, SkinHydrationIcon,
   SkinRejuvenationIcon, BeforeAfterIcon, MedicalConsultIcon, NaturalResultIcon,
+  HairlineDesignIcon, FollicleHealthIcon, GraftDensityIcon,
+  ScalpAnalysisIcon, PrecisionImplantIcon, PostOpCareIcon,
 } from '@/components/icons/AestheticIcons.jsx';
 
 const ICON_OPTIONS = [
@@ -27,6 +35,42 @@ const ICON_OPTIONS = [
   { key: 'BeforeAfterIcon',       label: 'Antes e Depois',          Component: BeforeAfterIcon },
   { key: 'MedicalConsultIcon',    label: 'Consulta Médica',         Component: MedicalConsultIcon },
   { key: 'NaturalResultIcon',     label: 'Resultado Natural',       Component: NaturalResultIcon },
+  { key: 'HairlineDesignIcon',    label: 'Desenho da Linha Frontal', Component: HairlineDesignIcon },
+  { key: 'FollicleHealthIcon',    label: 'Saúde Folicular',         Component: FollicleHealthIcon },
+  { key: 'GraftDensityIcon',      label: 'Densidade de Enxertos',   Component: GraftDensityIcon },
+  { key: 'ScalpAnalysisIcon',     label: 'Análise do Couro Cabeludo', Component: ScalpAnalysisIcon },
+  { key: 'PrecisionImplantIcon',  label: 'Precisão de Implantação', Component: PrecisionImplantIcon },
+  { key: 'PostOpCareIcon',        label: 'Pós-operatório Capilar',  Component: PostOpCareIcon },
+  { key: 'Award',                 label: 'Excelência',              Component: Award },
+  { key: 'Shield',                label: 'Segurança',               Component: Shield },
+  { key: 'Heart',                 label: 'Cuidado',                 Component: Heart },
+  { key: 'Sparkles',              label: 'Estética Premium',        Component: Sparkles },
+  { key: 'Star',                  label: 'Qualidade',               Component: Star },
+  { key: 'Zap',                   label: 'Tecnologia',              Component: Zap },
+  { key: 'Target',                label: 'Precisão',                Component: Target },
+  { key: 'Users',                 label: 'Equipe',                  Component: Users },
+  { key: 'Clock',                 label: 'Agilidade',               Component: Clock },
+  { key: 'Leaf',                  label: 'Recuperação',             Component: Leaf },
+  { key: 'Gem',                   label: 'Padrão Premium',          Component: Gem },
+  { key: 'TrendingUp',            label: 'Evolução',                Component: TrendingUp },
+  { key: 'BadgeCheck',            label: 'Certificado',             Component: BadgeCheck },
+  { key: 'Stethoscope',           label: 'Avaliação Médica',        Component: Stethoscope },
+  { key: 'Eye',                   label: 'Análise Visual',          Component: Eye },
+  { key: 'Brain',                 label: 'Planejamento',            Component: Brain },
+  { key: 'Smile',                 label: 'Satisfação',              Component: Smile },
+  { key: 'Globe',                 label: 'Padrão Internacional',    Component: Globe },
+  { key: 'Handshake',             label: 'Confiança',               Component: Handshake },
+  { key: 'Lightbulb',             label: 'Inovação',                Component: Lightbulb },
+  { key: 'Lock',                  label: 'Privacidade',             Component: Lock },
+  { key: 'Medal',                 label: 'Destaque',                Component: Medal },
+  { key: 'Microscope',            label: 'Microscopia',             Component: Microscope },
+  { key: 'Ribbon',                label: 'Reconhecimento',          Component: Ribbon },
+  { key: 'Sun',                   label: 'Bem-estar',               Component: Sun },
+  { key: 'ThumbsUp',              label: 'Aprovação',               Component: ThumbsUp },
+  { key: 'Trophy',                label: 'Referência',              Component: Trophy },
+  { key: 'Verified',              label: 'Verificado',              Component: Verified },
+  { key: 'Wallet',                label: 'Custo-benefício',         Component: Wallet },
+  { key: 'Wind',                  label: 'Leveza',                  Component: Wind },
 ];
 
 export const ICON_MAP = Object.fromEntries(ICON_OPTIONS.map(o => [o.key, o.Component]));
