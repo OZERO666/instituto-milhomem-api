@@ -24,13 +24,16 @@ export default function AdminConversionInsights({ bookings = [] }) {
   const { t } = useTranslation();
   const [period, setPeriod] = useState('30d');
 
-  const filteredBookings = useMemo(() => {
-    if (period === 'all') return bookings;
-
+  const periodDays = useMemo(() => {
+    if (period === 'all') return null;
     const days = Number(period.replace('d', ''));
-    if (!Number.isFinite(days)) return bookings;
+    return Number.isFinite(days) ? days : null;
+  }, [period]);
 
-    const threshold = Date.now() - days * 24 * 60 * 60 * 1000;
+  const filteredBookings = useMemo(() => {
+    if (!periodDays) return bookings;
+
+    const threshold = Date.now() - periodDays * 24 * 60 * 60 * 1000;
     return bookings.filter((booking) => {
       const rawDate = booking?.created || booking?.created_at;
       if (!rawDate) return false;
@@ -38,7 +41,55 @@ export default function AdminConversionInsights({ bookings = [] }) {
       if (Number.isNaN(parsed.getTime())) return false;
       return parsed.getTime() >= threshold;
     });
-  }, [bookings, period]);
+  }, [bookings, periodDays]);
+
+  const previousPeriodCount = useMemo(() => {
+    if (!periodDays) return null;
+
+    const now = Date.now();
+    const currentStart = now - periodDays * 24 * 60 * 60 * 1000;
+    const previousStart = currentStart - periodDays * 24 * 60 * 60 * 1000;
+
+    return bookings.reduce((count, booking) => {
+      const rawDate = booking?.created || booking?.created_at;
+      if (!rawDate) return count;
+      const parsed = new Date(rawDate);
+      if (Number.isNaN(parsed.getTime())) return count;
+
+      const timestamp = parsed.getTime();
+      if (timestamp >= previousStart && timestamp < currentStart) return count + 1;
+      return count;
+    }, 0);
+  }, [bookings, periodDays]);
+
+  const comparisonLabel = useMemo(() => {
+    if (previousPeriodCount === null) return null;
+
+    const currentCount = filteredBookings.length;
+    const diff = currentCount - previousPeriodCount;
+    if (diff === 0) {
+      return {
+        tone: 'neutral',
+        text: t('admin.conversion.compare_same', { count: previousPeriodCount }),
+      };
+    }
+
+    if (previousPeriodCount === 0) {
+      return {
+        tone: diff > 0 ? 'up' : 'down',
+        text: t('admin.conversion.compare_from_zero'),
+      };
+    }
+
+    const percentage = Math.round((Math.abs(diff) / previousPeriodCount) * 100);
+    return {
+      tone: diff > 0 ? 'up' : 'down',
+      text: t(diff > 0 ? 'admin.conversion.compare_up' : 'admin.conversion.compare_down', {
+        percentage,
+        count: Math.abs(diff),
+      }),
+    };
+  }, [filteredBookings.length, previousPeriodCount, t]);
 
   const sourceStats = useMemo(() => buildTopEntries(filteredBookings, 'origem'), [filteredBookings]);
   const ctaStats = useMemo(() => buildTopEntries(filteredBookings, 'cta_origem'), [filteredBookings]);
@@ -69,6 +120,21 @@ export default function AdminConversionInsights({ bookings = [] }) {
           <Badge variant="outline" className="gap-1"><BarChart3 className="w-3.5 h-3.5" /> {filteredBookings.length} {t('admin.conversion.leads')}</Badge>
         </div>
       </div>
+      {comparisonLabel && (
+        <div className="-mt-2">
+          <span
+            className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${
+              comparisonLabel.tone === 'up'
+                ? 'bg-emerald-50 text-emerald-700'
+                : comparisonLabel.tone === 'down'
+                  ? 'bg-red-50 text-red-700'
+                  : 'bg-slate-100 text-slate-700'
+            }`}
+          >
+            {comparisonLabel.text}
+          </span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
