@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+﻿import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import api from '@/lib/apiServerClient';
 
@@ -6,6 +6,7 @@ export function useMediaLibrary() {
   const [assets, setAssets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [nextCursor, setNextCursor] = useState(null);
   const [activeFolder, setActiveFolder] = useState('all');
 
@@ -43,6 +44,27 @@ export function useMediaLibrary() {
     }
   }, []);
 
+  const renameAsset = useCallback(async (publicId, newName) => {
+    setIsSaving(true);
+    try {
+      const result = await api.put('/utils/media', { public_id: publicId, new_name: newName });
+      setAssets((prev) =>
+        prev.map((a) =>
+          a.public_id === publicId
+            ? { ...a, public_id: result.public_id, secure_url: result.secure_url, thumbnail_url: result.secure_url }
+            : a
+        )
+      );
+      toast.success('Imagem renomeada com sucesso');
+      return result;
+    } catch (error) {
+      toast.error(error.message || 'Erro ao renomear imagem');
+      return null;
+    } finally {
+      setIsSaving(false);
+    }
+  }, []);
+
   const loadMore = useCallback(() => {
     if (!nextCursor || isLoading) return;
     fetchMedia(activeFolder, nextCursor, true);
@@ -52,11 +74,13 @@ export function useMediaLibrary() {
     assets,
     isLoading,
     isDeleting,
+    isSaving,
     nextCursor,
     activeFolder,
     fetchMedia,
     loadMore,
     deleteAsset,
+    renameAsset,
     setActiveFolder,
   };
 }

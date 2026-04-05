@@ -100,6 +100,36 @@ router.get('/media', authMiddleware, checkPermission('gallery', 'read'), async (
   }
 });
 
+router.put('/media', authMiddleware, checkPermission('gallery', 'update'), async (req, res) => {
+  const fromPublicId = String(req.body?.public_id || '').trim();
+  const newName = String(req.body?.new_name || '').trim();
+
+  if (!fromPublicId || !newName) {
+    return res.status(400).json({ error: 'public_id and new_name are required' });
+  }
+  if (!fromPublicId.startsWith('instituto-milhomem/')) {
+    return res.status(403).json({ error: 'Cannot rename assets outside of instituto-milhomem folder' });
+  }
+  // Build new public_id using same folder but new filename
+  const folder = fromPublicId.substring(0, fromPublicId.lastIndexOf('/') + 1);
+  const toPublicId = `${folder}${newName.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9_\-]/g, '')}`;
+
+  if (fromPublicId === toPublicId) {
+    return res.status(400).json({ error: 'new_name must be different from current name' });
+  }
+
+  try {
+    const result = await cloudinary.uploader.rename(fromPublicId, toPublicId, { overwrite: false });
+    return res.json({
+      success: true,
+      public_id: result.public_id,
+      secure_url: result.secure_url,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao renomear arquivo no Cloudinary', detail: error.message });
+  }
+});
+
 router.delete('/media', authMiddleware, checkPermission('gallery', 'delete'), async (req, res) => {
   const publicId = String(req.query.public_id || req.body?.public_id || '').trim();
   if (!publicId) return res.status(400).json({ error: 'public_id is required' });

@@ -1,9 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Copy, ExternalLink, Folder, Image as ImageIcon, Loader2, RefreshCw, Search, Trash2 } from 'lucide-react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
+import { Calendar, Check, Copy, ExternalLink, Folder, Image as ImageIcon, Loader2, Maximize2, Pencil, RefreshCw, Search, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Badge } from '@/components/ui/badge.jsx';
+import { Label } from '@/components/ui/label.jsx';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet.jsx';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,14 +36,30 @@ function formatBytes(value) {
   return `${size.toFixed(size >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
 }
 
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
 export default function MediaLibraryTab() {
-  const { assets, isLoading, isDeleting, nextCursor, activeFolder, fetchMedia, loadMore, deleteAsset } = useMediaLibrary();
+  const { assets, isLoading, isDeleting, isSaving, nextCursor, activeFolder, fetchMedia, loadMore, deleteAsset, renameAsset } = useMediaLibrary();
   const [query, setQuery] = useState('');
+  const [selectedAsset, setSelectedAsset] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [newName, setNewName] = useState('');
+  const [isEditingName, setIsEditingName] = useState(false);
 
   useEffect(() => {
     fetchMedia('all');
   }, [fetchMedia]);
+
+  // Sync selectedAsset when assets update (e.g. after rename)
+  useEffect(() => {
+    if (selectedAsset) {
+      const updated = assets.find((a) => a.asset_id === selectedAsset.asset_id);
+      if (updated) setSelectedAsset(updated);
+    }
+  }, [assets, selectedAsset]);
 
   const filteredAssets = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -58,11 +76,33 @@ export default function MediaLibraryTab() {
   const handleCopy = async (url) => {
     try {
       await navigator.clipboard.writeText(url);
-      toast.success('URL copiada para a área de transferência');
+      toast.success('URL copiada!');
     } catch {
       toast.error('Não foi possível copiar a URL');
     }
   };
+
+  const handleOpenDetails = (asset) => {
+    setSelectedAsset(asset);
+    const currentName = asset.public_id.split('/').pop();
+    setNewName(currentName);
+    setIsEditingName(false);
+  };
+
+  const handleRename = async () => {
+    if (!selectedAsset || !newName.trim()) return;
+    const result = await renameAsset(selectedAsset.public_id, newName.trim());
+    if (result) setIsEditingName(false);
+  };
+
+  const handleDeleteFromSheet = async () => {
+    if (!selectedAsset) return;
+    await deleteAsset(selectedAsset.public_id);
+    setSelectedAsset(null);
+    setConfirmDelete(null);
+  };
+
+  const currentFileName = selectedAsset?.public_id?.split('/').pop() || '';
 
   return (
     <div className="space-y-6">
@@ -71,7 +111,7 @@ export default function MediaLibraryTab() {
           <div>
             <h2 className="text-2xl font-bold text-secondary">Biblioteca De Mídia</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Todos os arquivos desta biblioteca vêm do Cloudinary. O projeto não usa pasta local `upload` ou `uploads` para mídia.
+              Arquivos hospedados no Cloudinary. Clique em qualquer imagem para ver detalhes, renomear ou deletar.
             </p>
           </div>
           <Button variant="outline" onClick={() => fetchMedia(activeFolder)} className="gap-2">
@@ -94,10 +134,9 @@ export default function MediaLibraryTab() {
               </button>
             ))}
           </div>
-
           <div className="relative lg:ml-auto lg:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por pasta, nome, formato..." className="pl-9" />
+            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por pasta, nome, formato..." className="pl-9" />
           </div>
         </div>
       </div>
@@ -111,43 +150,45 @@ export default function MediaLibraryTab() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filteredAssets.map((asset) => (
-            <div key={asset.asset_id} className="bg-white rounded-xl border border-border shadow-sm overflow-hidden hover:border-primary/40 transition-colors">
-              <div className="aspect-[4/3] bg-muted overflow-hidden">
+            <div
+              key={asset.asset_id}
+              className="bg-white rounded-xl border border-border shadow-sm overflow-hidden hover:border-primary/40 transition-colors cursor-pointer group"
+              onClick={() => handleOpenDetails(asset)}
+            >
+              <div className="aspect-[4/3] bg-muted overflow-hidden relative">
                 {asset.thumbnail_url ? (
-                  <img src={asset.thumbnail_url} alt={asset.public_id} className="w-full h-full object-cover" loading="lazy" />
+                  <img src={asset.thumbnail_url} alt={asset.public_id} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" loading="lazy" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                     <ImageIcon className="w-8 h-8" />
                   </div>
                 )}
-              </div>
-              <div className="p-4 space-y-3">
-                <div className="space-y-1">
-                  <p className="font-semibold text-secondary break-all line-clamp-2">{asset.public_id}</p>
-                  <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1"><Folder className="w-3.5 h-3.5" /> {asset.folder || 'sem pasta'}</span>
-                    <Badge variant="outline">{asset.format?.toUpperCase() || 'IMG'}</Badge>
-                    <Badge variant="outline">{formatBytes(asset.bytes)}</Badge>
-                  </div>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <Maximize2 className="w-6 h-6 text-white drop-shadow" />
                 </div>
-
-                <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1 gap-2" onClick={() => handleCopy(asset.secure_url)}>
-                    <Copy className="w-4 h-4" /> Copiar URL
+              </div>
+              <div className="p-4 space-y-2">
+                <p className="font-semibold text-secondary break-all line-clamp-1 text-sm">{asset.public_id.split('/').pop()}</p>
+                <div className="flex flex-wrap gap-1.5 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1"><Folder className="w-3 h-3" />{asset.folder || 'sem pasta'}</span>
+                  <Badge variant="outline" className="text-xs">{asset.format?.toUpperCase()}</Badge>
+                  <Badge variant="outline" className="text-xs">{formatBytes(asset.bytes)}</Badge>
+                  {asset.width && <Badge variant="outline" className="text-xs">{asset.width}×{asset.height}</Badge>}
+                </div>
+                <div className="flex gap-1.5 pt-1" onClick={(e) => e.stopPropagation()}>
+                  <Button variant="outline" size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => handleCopy(asset.secure_url)}>
+                    <Copy className="w-3.5 h-3.5" /> Copiar URL
                   </Button>
-                  <Button variant="outline" size="icon" asChild>
-                    <a href={asset.secure_url} target="_blank" rel="noreferrer" aria-label="Abrir arquivo no Cloudinary">
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
+                  <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => handleOpenDetails(asset)}>
+                    <Pencil className="w-3.5 h-3.5" /> Editar
                   </Button>
                   <Button
                     variant="outline"
                     size="icon"
-                    className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                    onClick={() => setConfirmDelete(asset)}
-                    aria-label="Deletar imagem"
+                    className="h-8 w-8 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                    onClick={() => { setConfirmDelete(asset); }}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </div>
@@ -165,12 +206,110 @@ export default function MediaLibraryTab() {
         </div>
       )}
 
+      {/* Detail / Edit Sheet */}
+      <Sheet open={!!selectedAsset} onOpenChange={(open) => { if (!open) setSelectedAsset(null); }}>
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="truncate">{currentFileName}</SheetTitle>
+          </SheetHeader>
+
+          {selectedAsset && (
+            <div className="space-y-6 mt-4">
+              {/* Preview */}
+              <div className="rounded-lg overflow-hidden border border-border bg-muted aspect-video flex items-center justify-center">
+                <img
+                  src={selectedAsset.secure_url}
+                  alt={selectedAsset.public_id}
+                  className="max-h-full max-w-full object-contain"
+                />
+              </div>
+
+              {/* Metadata */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-sm text-secondary">Informações</h3>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="text-muted-foreground">Pasta</div>
+                  <div className="font-medium text-right">{selectedAsset.folder || '—'}</div>
+                  <div className="text-muted-foreground">Formato</div>
+                  <div className="font-medium text-right">{selectedAsset.format?.toUpperCase() || '—'}</div>
+                  <div className="text-muted-foreground">Tamanho</div>
+                  <div className="font-medium text-right">{formatBytes(selectedAsset.bytes)}</div>
+                  {selectedAsset.width && <>
+                    <div className="text-muted-foreground">Dimensões</div>
+                    <div className="font-medium text-right">{selectedAsset.width} × {selectedAsset.height} px</div>
+                  </>}
+                  <div className="text-muted-foreground">Criado em</div>
+                  <div className="font-medium text-right text-xs">{formatDate(selectedAsset.created_at)}</div>
+                  <div className="text-muted-foreground col-span-2 border-t pt-2 text-xs break-all">
+                    <span className="font-semibold">public_id:</span> {selectedAsset.public_id}
+                  </div>
+                </div>
+              </div>
+
+              {/* Rename */}
+              <div className="space-y-2">
+                <Label className="font-semibold text-sm text-secondary">Renomear arquivo</Label>
+                <p className="text-xs text-muted-foreground">Atenção: renomear quebra URLs já em uso no site. Atualize os registros necessários após renomear.</p>
+                <div className="flex gap-2">
+                  <Input
+                    value={newName}
+                    onChange={(e) => { setNewName(e.target.value); setIsEditingName(true); }}
+                    placeholder="novo-nome-do-arquivo"
+                    className="flex-1"
+                    disabled={isSaving}
+                  />
+                  {isEditingName && newName !== currentFileName && (
+                    <>
+                      <Button size="icon" disabled={isSaving} onClick={handleRename} className="shrink-0">
+                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                      </Button>
+                      <Button size="icon" variant="ghost" disabled={isSaving} onClick={() => { setNewName(currentFileName); setIsEditingName(false); }} className="shrink-0">
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* URL */}
+              <div className="space-y-2">
+                <Label className="font-semibold text-sm text-secondary">URL da imagem</Label>
+                <div className="flex gap-2">
+                  <Input value={selectedAsset.secure_url} readOnly className="flex-1 text-xs" />
+                  <Button size="icon" variant="outline" onClick={() => handleCopy(selectedAsset.secure_url)}>
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col gap-2 pt-2 border-t">
+                <Button variant="outline" className="gap-2 w-full" asChild>
+                  <a href={selectedAsset.secure_url} target="_blank" rel="noreferrer">
+                    <ExternalLink className="w-4 h-4" /> Abrir imagem original
+                  </a>
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="gap-2 w-full"
+                  onClick={() => setConfirmDelete(selectedAsset)}
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="w-4 h-4" /> Deletar permanentemente
+                </Button>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Delete confirmation */}
       <AlertDialog open={!!confirmDelete} onOpenChange={(open) => { if (!open) setConfirmDelete(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Deletar imagem permanentemente?</AlertDialogTitle>
             <AlertDialogDescription>
-              A imagem <span className="font-mono text-xs break-all">{confirmDelete?.public_id}</span> será removida do Cloudinary e não poderá ser recuperada. Se estiver em uso em alguma página do site, ficará quebrada.
+              <span className="font-mono text-xs break-all">{confirmDelete?.public_id}</span> será removida do Cloudinary e não poderá ser recuperada. Se estiver em uso no site, ficará quebrada.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -178,15 +317,10 @@ export default function MediaLibraryTab() {
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={isDeleting}
-              onClick={async () => {
-                if (confirmDelete) {
-                  await deleteAsset(confirmDelete.public_id);
-                  setConfirmDelete(null);
-                }
-              }}
+              onClick={handleDeleteFromSheet}
             >
               {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
-              Deletar permanentemente
+              Deletar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
