@@ -11,7 +11,61 @@ Todos os 5 lotes foram executados com sucesso:
 
 ---
 
-## 🗄️ Arquivos SQL Para Importação Manual
+## 🔧 Correções de Schema Aplicadas
+
+### Migration 012 - Compatibilidade de Collation
+As colunas `campaign_slug` e `cta_variant` foram adicionadas à tabela `agendamentos` com **COLLATE utf8mb4_general_ci** explícito para garantir compatibilidade com a FK que referencia `campaigns(campaign_slug)`.
+
+**Antes** (erro #1005 FK):
+```sql
+ALTER TABLE agendamentos ADD COLUMN campaign_slug VARCHAR(120) NULL
+```
+
+**Depois** (corrigido):
+```sql
+ALTER TABLE agendamentos ADD COLUMN campaign_slug VARCHAR(120) COLLATE utf8mb4_general_ci NULL
+```
+
+### Migration 013 - Dependências de Schema Automáticas
+A Migration 013 agora cria **todas as suas dependências** antes de usar:
+- ✅ Cria tabela `resources` (se não existir)
+- ✅ ALTER em `permissions` para adicionar `resource_id` com FK
+- ✅ ALTER em `roles` para adicionar `role_slug`
+- ✅ Prepara `role_permissions` com timestamps
+
+**Resultado**: Pode executar 013 em qualquer momento, já que ela se auto-prepara!
+
+---
+
+## ⚠️ Nota Importante - Migration 013
+
+A Migration 013 (`013_rbac_granular_permissions.sql`) foi **atualizada para criar suas próprias dependências**. Ela agora:
+
+1. ✅ Cria a tabela `resources` (caso não exista)
+2. ✅ Altera a tabela `permissions` para adicionar coluna `resource_id` com FK
+3. ✅ Altera a tabela `roles` para adicionar coluna `role_slug`
+4. ✅ Popula a tabela `resources` com 16 recursos granulares
+5. ✅ Cria todas as permissões (50+) para cada recurso
+6. ✅ Vincula todas as permissões ao role `super_admin`
+
+**Resultado**: Você pode executar 013 diretamente sem depender de migrações anteriores não aplicadas!
+
+---
+
+## � Ordem Recomendada de Importação
+
+Você pode importar as 4 migrations em **qualquer ordem**, mas recomenda-se:
+
+1. **011_artigos_workflow_schema.sql** (simples, sem dependências externas)
+2. **012_campaigns_and_cta_variants.sql** (cria novas tabelas, adiciona colunas em agendamentos)
+3. **013_rbac_granular_permissions.sql** (cria resources, ALTER em permissions e roles)
+4. **014_featured_content_slots.sql** (cria novas tabelas, independente)
+
+**Todas são idempotent** com `CREATE TABLE IF NOT EXISTS` e `ADD COLUMN IF NOT EXISTS`, então podem ser aplicadas múltiplas vezes com segurança.
+
+---
+
+## �🗄️ Arquivos SQL Para Importação Manual
 
 Todos os 4 arquivos `.sql` estão em `/src/db/migrations/`:
 
