@@ -195,6 +195,11 @@
     "bookings": {
       "title": "Leads / Bookings",
       "search_placeholder": "Search by name, email, campaign...",
+      "period_label": "Period",
+      "period_7d": "Last 7 days",
+      "period_30d": "Last 30 days",
+      "period_90d": "Last 90 days",
+      "period_all": "All time",
       "all_sources": "All sources",
       "all_ctas": "All CTAs",
       "empty_filtered": "No leads found for the current filters.",

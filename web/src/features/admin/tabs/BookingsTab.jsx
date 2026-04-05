@@ -21,6 +21,7 @@ const toDisplayValue = (value, t) => {
 const BookingsTab = ({ bookings, isLoading, onMarkAsRead, onDelete }) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
+  const [periodFilter, setPeriodFilter] = useState('30d');
   const [sourceFilter, setSourceFilter] = useState('all');
   const [ctaFilter, setCtaFilter] = useState('all');
 
@@ -36,7 +37,19 @@ const BookingsTab = ({ bookings, isLoading, onMarkAsRead, onDelete }) => {
 
   const filteredBookings = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
+    const periodDays = periodFilter === 'all' ? null : Number(periodFilter.replace('d', ''));
+    const threshold = Number.isFinite(periodDays)
+      ? Date.now() - periodDays * 24 * 60 * 60 * 1000
+      : null;
+
     return bookings.filter((booking) => {
+      if (threshold) {
+        const rawDate = booking?.created || booking?.created_at;
+        if (!rawDate) return false;
+        const parsed = new Date(rawDate);
+        if (Number.isNaN(parsed.getTime()) || parsed.getTime() < threshold) return false;
+      }
+
       const matchesSource = sourceFilter === 'all' || toNormalizedValue(booking.origem) === sourceFilter;
       const matchesCta = ctaFilter === 'all' || toNormalizedValue(booking.cta_origem) === ctaFilter;
       if (!matchesSource || !matchesCta) return false;
@@ -57,13 +70,13 @@ const BookingsTab = ({ bookings, isLoading, onMarkAsRead, onDelete }) => {
         .toLowerCase();
       return haystack.includes(normalizedQuery);
     });
-  }, [bookings, ctaFilter, query, sourceFilter]);
+  }, [bookings, ctaFilter, periodFilter, query, sourceFilter]);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-border p-6">
       <h2 className="text-2xl font-bold mb-6 text-secondary border-b pb-4">{t('admin.bookings.title')}</h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-5">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 mb-5">
         <div className="relative lg:col-span-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -74,6 +87,18 @@ const BookingsTab = ({ bookings, isLoading, onMarkAsRead, onDelete }) => {
             className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
         </div>
+
+        <select
+          value={periodFilter}
+          onChange={(event) => setPeriodFilter(event.target.value)}
+          aria-label={t('admin.bookings.period_label')}
+          className="px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
+          <option value="7d">{t('admin.bookings.period_7d')}</option>
+          <option value="30d">{t('admin.bookings.period_30d')}</option>
+          <option value="90d">{t('admin.bookings.period_90d')}</option>
+          <option value="all">{t('admin.bookings.period_all')}</option>
+        </select>
 
         <select
           value={sourceFilter}
