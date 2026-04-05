@@ -11,13 +11,6 @@ import TabLoader from '@/features/admin/components/TabLoader.jsx';
 import MediaSelectorField from '@/features/admin/components/MediaSelectorField.jsx';
 import TranslationFields from '@/features/admin/components/TranslationFields.jsx';
 import PhosphorIcon from '@/components/PhosphorIcon.jsx';
-import {
-  HairTransplantIcon, HairFUEIcon, HairDHIIcon, BeardTransplantIcon,
-  EyebrowTransplantIcon, SkinCleansingIcon, PeelingLaserIcon, SkinHydrationIcon,
-  SkinRejuvenationIcon, BeforeAfterIcon, MedicalConsultIcon, NaturalResultIcon,
-  HairlineDesignIcon, FollicleHealthIcon, GraftDensityIcon,
-  ScalpAnalysisIcon, PrecisionImplantIcon, PostOpCareIcon,
-} from '@/components/icons/AestheticIcons.jsx';
 
 const phosphorIconModules = import.meta.glob('/node_modules/@phosphor-icons/react/dist/csr/*.es.js');
 const PHOSPHOR_ICON_KEYS = Object.keys(phosphorIconModules)
@@ -31,41 +24,48 @@ const formatIconLabel = (key) => key
   .replace(/\s+/g, ' ')
   .trim();
 
-const CUSTOM_ICON_OPTIONS = [
-  { key: 'HairTransplantIcon',    label: 'Transplante Capilar',     Component: HairTransplantIcon },
-  { key: 'HairFUEIcon',           label: 'Técnica FUE',             Component: HairFUEIcon },
-  { key: 'HairDHIIcon',           label: 'Técnica DHI (caneta)',     Component: HairDHIIcon },
-  { key: 'BeardTransplantIcon',   label: 'Transplante de Barba',    Component: BeardTransplantIcon },
-  { key: 'EyebrowTransplantIcon', label: 'Trspl. de Sobrancelhas',  Component: EyebrowTransplantIcon },
-  { key: 'SkinCleansingIcon',     label: 'Limpeza de Pele',         Component: SkinCleansingIcon },
-  { key: 'PeelingLaserIcon',      label: 'Peeling / Laser',         Component: PeelingLaserIcon },
-  { key: 'SkinHydrationIcon',     label: 'Hidratação da Pele',      Component: SkinHydrationIcon },
-  { key: 'SkinRejuvenationIcon',  label: 'Rejuvenescimento',        Component: SkinRejuvenationIcon },
-  { key: 'BeforeAfterIcon',       label: 'Antes e Depois',          Component: BeforeAfterIcon },
-  { key: 'MedicalConsultIcon',    label: 'Consulta Médica',         Component: MedicalConsultIcon },
-  { key: 'NaturalResultIcon',     label: 'Resultado Natural',       Component: NaturalResultIcon },
-  { key: 'HairlineDesignIcon',    label: 'Desenho da Linha Frontal', Component: HairlineDesignIcon },
-  { key: 'FollicleHealthIcon',    label: 'Saúde Folicular',         Component: FollicleHealthIcon },
-  { key: 'GraftDensityIcon',      label: 'Densidade de Enxertos',   Component: GraftDensityIcon },
-  { key: 'ScalpAnalysisIcon',     label: 'Análise do Couro Cabeludo', Component: ScalpAnalysisIcon },
-  { key: 'PrecisionImplantIcon',  label: 'Precisão de Implantação', Component: PrecisionImplantIcon },
-  { key: 'PostOpCareIcon',        label: 'Pós-operatório Capilar',  Component: PostOpCareIcon },
-];
-
 const PHOSPHOR_ICON_OPTIONS = PHOSPHOR_ICON_KEYS.map((key) => ({
   key,
   label: `Phosphor: ${formatIconLabel(key)}`,
   Component: ({ className }) => <PhosphorIcon name={key} size={28} className={className} />,
 }));
 
-const ICON_OPTIONS = [...CUSTOM_ICON_OPTIONS, ...PHOSPHOR_ICON_OPTIONS];
+const LEGACY_CUSTOM_ICON_KEYS = new Set([
+  'HairTransplantIcon',
+  'HairFUEIcon',
+  'HairDHIIcon',
+  'BeardTransplantIcon',
+  'EyebrowTransplantIcon',
+  'SkinCleansingIcon',
+  'PeelingLaserIcon',
+  'SkinHydrationIcon',
+  'SkinRejuvenationIcon',
+  'BeforeAfterIcon',
+  'MedicalConsultIcon',
+  'NaturalResultIcon',
+  'HairlineDesignIcon',
+  'FollicleHealthIcon',
+  'GraftDensityIcon',
+  'ScalpAnalysisIcon',
+  'PrecisionImplantIcon',
+  'PostOpCareIcon',
+]);
+
+const normalizeIconKey = (key) => {
+  if (!key) return '';
+  if (LEGACY_CUSTOM_ICON_KEYS.has(key)) return 'Sparkle';
+  return key;
+};
+
+const ICON_OPTIONS = PHOSPHOR_ICON_OPTIONS;
 
 export const ICON_MAP = Object.fromEntries(ICON_OPTIONS.map(o => [o.key, o.Component]));
 
 function IconPicker({ value, onChange }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const selected = ICON_OPTIONS.find(o => o.key === value);
+  const normalizedValue = normalizeIconKey(value);
+  const selected = ICON_OPTIONS.find(o => o.key === normalizedValue);
   const SelectedIcon = selected?.Component;
   const matchingOptions = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -77,8 +77,8 @@ function IconPicker({ value, onChange }) {
   }, [query]);
   const filteredOptions = useMemo(() => {
     if (query.trim()) return matchingOptions;
-    // Sem filtro, mostra todos os customizados + um lote inicial de Phosphor.
-    return [...CUSTOM_ICON_OPTIONS, ...PHOSPHOR_ICON_OPTIONS.slice(0, 120)];
+    // Sem filtro, mostra um lote inicial para manter o dropdown leve.
+    return PHOSPHOR_ICON_OPTIONS.slice(0, 150);
   }, [query, matchingOptions]);
 
   return (
@@ -109,7 +109,7 @@ function IconPicker({ value, onChange }) {
             </p>
             {!query.trim() && (
               <p className="text-[10px] text-muted-foreground">
-                Dica: digite para pesquisar entre todos os ícones Phosphor.
+                Dica: os SVG antigos foram removidos; digite para pesquisar em todos os ícones Phosphor.
               </p>
             )}
           </div>
@@ -280,9 +280,17 @@ const ServicosTab = ({ services, isLoading, serviceForm, editingItem, setEditing
               </div>
               <p className="text-sm text-muted-foreground line-clamp-2">{item.descricao}</p>
               <div className="flex items-center gap-2 mt-2">
-                {ICON_MAP[item.icon] && (() => { const Icon = ICON_MAP[item.icon]; return <Icon className="w-5 h-5 text-primary" />; })()}
+                {(() => {
+                  const key = normalizeIconKey(item.icon);
+                  const Icon = ICON_MAP[key];
+                  return Icon ? <Icon className="w-5 h-5 text-primary" /> : null;
+                })()}
                 <Badge variant="outline">Ordem: {item.ordem || 0}</Badge>
-                {item.icon && <Badge variant="secondary" className="text-[10px]">{ICON_OPTIONS.find(o => o.key === item.icon)?.label ?? item.icon}</Badge>}
+                {item.icon && (
+                  <Badge variant="secondary" className="text-[10px]">
+                    {ICON_OPTIONS.find(o => o.key === normalizeIconKey(item.icon))?.label ?? normalizeIconKey(item.icon)}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
