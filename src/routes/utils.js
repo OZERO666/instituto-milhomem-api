@@ -100,6 +100,26 @@ router.get('/media', authMiddleware, checkPermission('gallery', 'read'), async (
   }
 });
 
+router.delete('/media', authMiddleware, checkPermission('gallery', 'delete'), async (req, res) => {
+  const publicId = String(req.query.public_id || req.body?.public_id || '').trim();
+  if (!publicId) return res.status(400).json({ error: 'public_id is required' });
+
+  // Security: only allow deleting from our own Cloudinary folder
+  if (!publicId.startsWith('instituto-milhomem/')) {
+    return res.status(403).json({ error: 'Cannot delete assets outside of instituto-milhomem folder' });
+  }
+
+  try {
+    const result = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+    if (result.result === 'ok' || result.result === 'not found') {
+      return res.json({ success: true, result: result.result });
+    }
+    return res.status(500).json({ error: 'Cloudinary returned unexpected result', detail: result.result });
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao deletar arquivo do Cloudinary', detail: error.message });
+  }
+});
+
 function extractCoords(url = '') {
   // Format: /maps/@lat,lng,{zoom}z
   const atMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+),(\d+(?:\.\d+)?)z/);

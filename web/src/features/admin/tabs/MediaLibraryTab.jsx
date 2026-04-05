@@ -1,9 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Copy, ExternalLink, Folder, Image as ImageIcon, Loader2, RefreshCw, Search } from 'lucide-react';
+import { Copy, ExternalLink, Folder, Image as ImageIcon, Loader2, RefreshCw, Search, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Badge } from '@/components/ui/badge.jsx';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog.jsx';
 import { useMediaLibrary } from '@/features/admin/hooks/useMediaLibrary.js';
 import TabLoader from '@/features/admin/components/TabLoader.jsx';
 
@@ -25,8 +35,9 @@ function formatBytes(value) {
 }
 
 export default function MediaLibraryTab() {
-  const { assets, isLoading, nextCursor, activeFolder, fetchMedia, loadMore } = useMediaLibrary();
+  const { assets, isLoading, isDeleting, nextCursor, activeFolder, fetchMedia, loadMore, deleteAsset } = useMediaLibrary();
   const [query, setQuery] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   useEffect(() => {
     fetchMedia('all');
@@ -129,6 +140,15 @@ export default function MediaLibraryTab() {
                       <ExternalLink className="w-4 h-4" />
                     </a>
                   </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                    onClick={() => setConfirmDelete(asset)}
+                    aria-label="Deletar imagem"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             </div>
@@ -144,6 +164,33 @@ export default function MediaLibraryTab() {
           </Button>
         </div>
       )}
+
+      <AlertDialog open={!!confirmDelete} onOpenChange={(open) => { if (!open) setConfirmDelete(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deletar imagem permanentemente?</AlertDialogTitle>
+            <AlertDialogDescription>
+              A imagem <span className="font-mono text-xs break-all">{confirmDelete?.public_id}</span> será removida do Cloudinary e não poderá ser recuperada. Se estiver em uso em alguma página do site, ficará quebrada.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeleting}
+              onClick={async () => {
+                if (confirmDelete) {
+                  await deleteAsset(confirmDelete.public_id);
+                  setConfirmDelete(null);
+                }
+              }}
+            >
+              {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
+              Deletar permanentemente
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
