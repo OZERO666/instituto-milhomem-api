@@ -22,6 +22,7 @@ import settingsRoutes from './settings.js';
 import traducoesRoutes from './traducoes.js';
 import utilsRoutes from './utils.js';
 import faqRoutes from './faq.js';
+import featuredSlotsRoutes from './featured-slots.js';
 
 export default () => {
   // ✅ router criado DENTRO da factory — novo a cada chamada
@@ -50,6 +51,7 @@ export default () => {
   router.use('/traducoes', traducoesRoutes);
   router.use('/utils', utilsRoutes);
   router.use('/faq', faqRoutes);
+  router.use('/featured-slots', featuredSlotsRoutes);
 
   return router;
 };
