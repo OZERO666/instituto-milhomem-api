@@ -9,6 +9,9 @@ export default [
 			sourceType: 'module',
 			globals: {
 				...globals.node,
+				...globals.browser,
+				Intl: 'readonly',
+				UUID: 'readonly',
 			}
 		},
 		rules: {

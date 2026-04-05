@@ -59,7 +59,7 @@ export const generateSlug = (title) => {
 };
 
 export const isValidSlug = (slug) => {
-  return /^[a-z0-9\-]{3,50}$/.test(slug);
+  return /^[a-z0-9-]{3,50}$/.test(slug);
 };
 
 // ─── Validações ────────────────────────────────────────────────────────────
@@ -68,7 +68,7 @@ export const isValidEmail = (email) => {
 };
 
 export const isValidPhone = (phone) => {
-  return /^[\+]?[1-9][\d]{0,15}$/.test(phone.replace(/\D/g, ''));
+  return /^[+]?[1-9][\d]{0,15}$/.test(phone.replace(/\D/g, ''));
 };
 
 export const isValidDate = (date) => {

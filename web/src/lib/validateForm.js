@@ -44,7 +44,7 @@ export const isValidCPF = (cpf) => {
 
 export const isValidSlug = (slug) => {
   if (!slug) return false;
-  return /^[a-z0-9\-]{3,60}$/.test(slug);
+  return /^[a-z0-9-]{3,60}$/.test(slug);
 };
 
 export const isValidURL = (url) => {
