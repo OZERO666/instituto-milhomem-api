@@ -44,7 +44,7 @@ SET @col_campaign_slug_exists = (
 SET @sql_add_campaign_slug = IF(
   @col_campaign_slug_exists = 0,
   'ALTER TABLE agendamentos ADD COLUMN campaign_slug VARCHAR(120) COLLATE utf8mb4_general_ci NULL AFTER utm_term',
-  'SELECT 1'
+  'ALTER TABLE agendamentos MODIFY COLUMN campaign_slug VARCHAR(120) COLLATE utf8mb4_general_ci NULL'
 );
 PREPARE stmt_add_campaign_slug FROM @sql_add_campaign_slug;
 EXECUTE stmt_add_campaign_slug;
@@ -62,7 +62,7 @@ SET @col_cta_variant_exists = (
 SET @sql_add_cta_variant = IF(
   @col_cta_variant_exists = 0,
   'ALTER TABLE agendamentos ADD COLUMN cta_variant VARCHAR(120) COLLATE utf8mb4_general_ci NULL AFTER campaign_slug',
-  'SELECT 1'
+  'ALTER TABLE agendamentos MODIFY COLUMN cta_variant VARCHAR(120) COLLATE utf8mb4_general_ci NULL'
 );
 PREPARE stmt_add_cta_variant FROM @sql_add_cta_variant;
 EXECUTE stmt_add_cta_variant;
