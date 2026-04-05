@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS resources (
 
 -- Alter permissions table to add resource_id foreign key if needed
 ALTER TABLE permissions
-  ADD COLUMN IF NOT EXISTS permission_slug CHAR(36),
-  ADD COLUMN IF NOT EXISTS resource_id CHAR(36),
+  ADD COLUMN IF NOT EXISTS permission_slug CHAR(36) COLLATE utf8mb4_unicode_ci,
+  ADD COLUMN IF NOT EXISTS resource_id CHAR(36) COLLATE utf8mb4_unicode_ci,
   ADD COLUMN IF NOT EXISTS created DATETIME DEFAULT CURRENT_TIMESTAMP,
   ADD COLUMN IF NOT EXISTS updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
